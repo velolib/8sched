@@ -206,8 +206,8 @@ export function ScheduleViewer() {
         </Button>
         <ModeToggle className='ml-2 sm:ml-4' />
       </div>
-      <div className="flex flex-col items-center md:flex-row gap-4 mb-4">
-        <div className="flex gap-4 w-full md:w-auto">
+      <div className="flex flex-col items-center md:flex-row gap-2 mb-4">
+        <div className="flex gap-2 w-full md:w-auto">
           <Select onValueChange={handleClassChange} value={selectedClass}>
             <SelectTrigger className="w-full md:w-[180px]">
               <SelectValue placeholder="Select a class" />
@@ -227,7 +227,7 @@ export function ScheduleViewer() {
             </SelectContent>
           </Select>
           <Toggle aria-label="Toggle compact" pressed={compact} onPressedChange={setCompact} variant='outline'>
-            <LayoutGrid className="h-4 w-4" />
+            <LayoutGrid className="h-4 w-4 text-zinc-900 dark:text-zinc-50" />
           </Toggle>
         </div>
 
