@@ -128,9 +128,9 @@ const getSubjectStyles = (subject: string | undefined) => {
 
 const getTimeIcon = (time: string) => {
   const hour = Number.parseInt(time.split(":")[0])
-  if (hour < 10) return <Sunrise className="w-4 h-4 text-orange-400" />
-  if (hour < 15) return <Sun className="w-4 h-4 text-yellow-400" />
-  return <Moon className="w-4 h-4 text-blue-400" />
+  if (hour < 10) return <Sunrise className="w-4 h-4 text-orange-400 flex-shrink-0" />
+  if (hour < 15) return <Sun className="w-4 h-4 text-yellow-400 flex-shrink-0" />
+  return <Moon className="w-4 h-4 text-blue-400 flex-shrink-0" />
 }
 
 const formatSubject = (subject: string): string => {
@@ -164,13 +164,13 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
             {row.EndPeriod !== row.Period && (
               <div className="flex items-center gap-px text-sm mt-1">
                 {/* <div className="h-3 w-[1px] bg-white/60 rotate-12" /> */}
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="w-3 h-3 flex-shrink-0" />
                 <span className="font-medium">{row.EndPeriod}</span>
               </div>
             )}
           </div>
         ) : (
-          <Coffee className="w-8 h-8 text-white" />
+          <Coffee className="w-8 h-8 text-white flex-shrink-0" />
         )}
       </div>
 
@@ -180,8 +180,8 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
           <div>
             <h3 className="font-semibold capitalize">
               {isRegularClass && teacherInfo ? (
-                <div className="flex items-center gap-2">
-                  <Book className={cn("w-5 h-5", subjectStyles.text)} />
+                <div className="flex items-start gap-2">
+                  <Book className={cn("w-5 h-5 mt-0.5 flex-shrink-0", subjectStyles.text)} />
                   <span className={cn("bg-gradient-to-r bg-clip-text", subjectStyles.gradient, "text-transparent")}>
                     {formatSubject(teacherInfo.Subject)}
                   </span>
@@ -203,7 +203,7 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
           </div>
 
           {!compact && <div className="flex flex-col gap-2 text-sm">
-            <div className="flex items-center gap-2 text-muted-foreground/80">
+            <div className="flex items-start gap-2 text-muted-foreground/80">
               {getTimeIcon(row.Time)}
               <span className="tabular-nums">
                 {row.Time} - {row.EndTime}
@@ -211,8 +211,8 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
             </div>
 
             {isRegularClass && teacherInfo && (
-              <div className="flex items-center gap-2 text-muted-foreground/80">
-                <User className="w-4 h-4 text-primary/70" />
+              <div className="flex items-start gap-2 text-muted-foreground/80">
+                <User className="w-4 h-4 mt-0.5 text-primary/70 flex-shrink-0" />
                 <span className="capitalize">
                   {teacherInfo.Name.split(",")[0].toLowerCase()}
                   <span className="normal-case">,{teacherInfo.Name.split(",")[1]}</span>
@@ -225,4 +225,3 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
     </Card>
   )
 }
-
