@@ -204,7 +204,7 @@ export function ScheduleViewer() {
             <Code className="size-4" />
           </a>
         </Button>
-        <ModeToggle className='ml-2 sm:ml-4' />
+        <ModeToggle className='ml-2' />
       </div>
       <div className="flex flex-col items-center md:flex-row gap-2 mb-4">
         <div className="flex gap-2 w-full md:w-auto">
