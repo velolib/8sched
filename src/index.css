@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @plugin "tailwindcss-animate";
+@plugin "tailwindcss-motion";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -13,4 +14,8 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+}
+
+body {
+    @apply bg-white dark:bg-zinc-950
 }
