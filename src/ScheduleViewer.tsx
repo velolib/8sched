@@ -184,12 +184,11 @@ export function ScheduleViewer() {
             </a>
           </span>
         </div>
-        <Button variant={'outline'} className='ml-auto hidden md:block'>
+        <Button variant={'outline'} className='ml-auto hidden md:flex' asChild>
           <a
             href="https://github.com/velolib/8sched"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2"
           >
             <Code className="size-4" /> <span>Source Code</span>
           </a>
