@@ -255,7 +255,7 @@ export function ScheduleViewer() {
           </Tooltip>
         </TooltipProvider>
         <div className='text-zinc-900 dark:text-zinc-50 text-xs text-nowrap'>
-          Last updated: {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString("en-GB")}
+          Last updated: {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString("en-GB", { month: "long", day: "2-digit", year: "numeric" })}
         </div>
       </div>
       <ScrollArea className="h-[calc(100vh-200px)]">
