@@ -13,11 +13,38 @@ import { ModeToggle } from './components/mode-toggle'
 import { Button } from './components/ui/button'
 import { Toggle } from './components/ui/toggle'
 
-const classes = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+const classes = [
+  "X-A", "X-B", "X-C", "X-D", "X-E", "X-F", "X-G", "X-H", "X-I", "X-J",
+  "XI-A", "XI-B", "XI-C", "XI-D", "XI-E", "XI-F", "XI-G", "XI-H", "XI-I", "XI-J",
+  "XII-A", "XII-B", "XII-C", "XII-D", "XII-E", "XII-F", "XII-G", "XII-H", "XII-I", "XII-J",
+]
 const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"]
 
 export function ScheduleViewer() {
-  const [selectedClass, setSelectedClass] = useLocalStorage("selectedClass", "A")
+
+  useEffect(() => {
+    const storedHash = localStorage.getItem('VITE_GIT_COMMIT_HASH');
+    const currentHash = import.meta.env.VITE_GIT_COMMIT_HASH;
+
+    console.log("Stored Commit Hash:", storedHash);
+    console.log("Current Commit Hash:", currentHash);
+
+    if (!storedHash) {
+      console.log("No stored hash found. Setting initial commit hash.");
+      localStorage.clear();
+      localStorage.setItem('VITE_GIT_COMMIT_HASH', currentHash);
+    }
+
+    if (storedHash !== currentHash) {
+      console.log("Commit hash changed! Updating localStorage...");
+      localStorage.clear()
+      localStorage.setItem('VITE_GIT_COMMIT_HASH', currentHash);
+    } else {
+      console.log("Commit hash is the same. No update needed.");
+    }
+  }, [])
+
+  const [selectedClass, setSelectedClass] = useLocalStorage("selectedClass", "X-A")
   const [selectedDay, setSelectedDay] = useSessionStorage("selectedDay", days[new Date().getDay() - 1] || "Senin")
   const [compact, setCompact] = useLocalStorage("compact", false)
 
@@ -64,18 +91,38 @@ export function ScheduleViewer() {
       const text = await response.text()
       const rows = Papa.parse(text, { delimiter: "," }).data as string[][]
       return rows.map((row) => ({
-        Time: row[0] || "",
-        Period: row[1] || "",
-        Class_A: row[2] || "",
-        Class_B: row[3] || "",
-        Class_C: row[4] || "",
-        Class_D: row[5] || "",
-        Class_E: row[6] || "",
-        Class_F: row[7] || "",
-        Class_G: row[8] || "",
-        Class_H: row[9] || "",
-        Class_I: row[10] || "",
-        Class_J: row[11] || "",
+        time: row[0] || "",
+        period: row[1] || "",
+        "X-A": row[2] || "",
+        "X-B": row[3] || "",
+        "X-C": row[4] || "",
+        "X-D": row[5] || "",
+        "X-E": row[6] || "",
+        "X-F": row[7] || "",
+        "X-G": row[8] || "",
+        "X-H": row[9] || "",
+        "X-I": row[10] || "",
+        "X-J": row[11] || "",
+        "XI-A": row[12] || "",
+        "XI-B": row[13] || "",
+        "XI-C": row[14] || "",
+        "XI-D": row[15] || "",
+        "XI-E": row[16] || "",
+        "XI-F": row[17] || "",
+        "XI-G": row[18] || "",
+        "XI-H": row[19] || "",
+        "XI-I": row[20] || "",
+        "XI-J": row[21] || "",
+        "XII-A": row[22] || "",
+        "XII-B": row[23] || "",
+        "XII-C": row[24] || "",
+        "XII-D": row[25] || "",
+        "XII-E": row[26] || "",
+        "XII-F": row[27] || "",
+        "XII-G": row[28] || "",
+        "XII-H": row[29] || "",
+        "XII-I": row[30] || "",
+        "XII-J": row[31] || "",
       }))
     },
   })
@@ -95,20 +142,21 @@ export function ScheduleViewer() {
       const text = await response.text()
       const rows = Papa.parse(text, { delimiter: "," }).data as string[][]
       return rows.map((row) => ({
-        Code: row[0] || "",
-        Name: row[1] || "",
-        Subject: row[2] || "",
+        code: row[0] || "",
+        name: row[1] || "",
+        subject: row[2] || "",
       }))
     },
   })
 
+  // Group schedule by day
   const combinedSchedule = useMemo(() => {
-    const splitSchedules = (data: ScheduleRow[]) => {
+    const groupSchedules = (data: ScheduleRow[]) => {
       const result: ScheduleRow[][] = []
       let currentDay: ScheduleRow[] = []
-  
+
       data.forEach((item) => {
-        if (item.Time === "06:30") {
+        if (item.time === "06:30") {
           if (currentDay.length > 0) {
             result.push(currentDay)
           }
@@ -116,15 +164,16 @@ export function ScheduleViewer() {
         }
         currentDay.push(item)
       })
-  
+
       if (currentDay.length > 0) {
         result.push(currentDay)
       }
-  
+
       return result
     }
 
     if (!scheduleData) return []
+
     const combineSchedule = (schedule: ScheduleRow[]): CombinedScheduleRow[] => {
       const combined: CombinedScheduleRow[] = []
       let current: CombinedScheduleRow | null = null
@@ -133,23 +182,27 @@ export function ScheduleViewer() {
         const row = schedule[i]
         const nextRow = i < schedule.length - 1 ? schedule[i + 1] : null
 
+        if (!row[selectedClass as keyof ScheduleRow]) {
+          continue
+        }
+
         if (
           !current ||
-          row[`Class_${selectedClass}` as keyof ScheduleRow] !==
-            current[`Class_${selectedClass}` as keyof ScheduleRow] ||
-          !row.Period
+          row[selectedClass as keyof ScheduleRow] !==
+          current[selectedClass as keyof ScheduleRow] ||
+          !row.period
         ) {
           if (current) {
             combined.push(current)
           }
           current = {
             ...row,
-            EndTime: nextRow ? nextRow.Time : "Selesai",
-            EndPeriod: row.Period,
+            endTime: nextRow ? nextRow.time : "Selesai",
+            endPeriod: row.period,
           }
         } else {
-          current.EndTime = nextRow ? nextRow.Time : "Selesai"
-          current.EndPeriod = row.Period
+          current.endTime = nextRow ? nextRow.time : "Selesai"
+          current.endPeriod = row.period
         }
       }
 
@@ -159,7 +212,10 @@ export function ScheduleViewer() {
 
       return combined
     }
-    const filteredSchedule = splitSchedules(scheduleData)[days.indexOf(selectedDay)]
+
+    // Filter schedule by selected day
+    const filteredSchedule = groupSchedules(scheduleData)[days.indexOf(selectedDay)]
+
     return combineSchedule(filteredSchedule)
   }, [scheduleData, selectedDay, selectedClass])
 
@@ -219,14 +275,14 @@ export function ScheduleViewer() {
                     value={cls}
                     className="flex items-center justify-center rounded-md p-2 pr-8"
                   >
-                    XI-{cls}
+                    {cls}
                   </SelectItem>
                 ))}
               </div>
             </SelectContent>
           </Select>
           <Toggle aria-label="Toggle compact" pressed={compact} onPressedChange={setCompact} variant='outline'>
-            <LayoutGrid className="h-4 w-4 text-zinc-900 dark:text-zinc-50" />
+            <LayoutGrid className="size-4 text-zinc-900 dark:text-zinc-50" />
           </Toggle>
         </div>
 
@@ -243,9 +299,9 @@ export function ScheduleViewer() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button className="p-2 text-zinc-900 dark:text-zinc-50 hover:text-foreground hidden md:block">
-                <Keyboard className="h-4 w-4" />
-              </button>
+              <Button className="hidden md:flex items-center justify-center aspect-square" type='button' size={'icon'} variant={'ghost'}>
+                <Keyboard className="size-4" />
+              </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Keyboard shortcuts:</p>
@@ -261,14 +317,14 @@ export function ScheduleViewer() {
       <ScrollArea className="h-[calc(100vh-200px)]">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 grow min-h-0">
           {combinedSchedule.map((row, index) => (
-            row.Period != "Selesai" && <ScheduleItem
-            key={`${index}-${selectedClass}-${selectedDay}`}
-            row={row}
-            index={index}
-            selectedClass={selectedClass}
-            teacherData={teacherData}
-            compact={compact}
-          />
+            row.period != "Selesai" && <ScheduleItem
+              key={`${index}-${selectedClass}-${selectedDay}`}
+              row={row}
+              index={index}
+              selectedClass={selectedClass}
+              teacherData={teacherData}
+              compact={compact}
+            />
           ))}
         </div>
       </ScrollArea>

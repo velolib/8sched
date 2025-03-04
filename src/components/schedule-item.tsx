@@ -1,6 +1,6 @@
 "use client"
 
-import { Book, User, Coffee, Moon, Sun, Sunrise, ArrowRight } from "lucide-react"
+import { Book, User, Coffee, Moon, Sun, Sunrise, ArrowRight, Star } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import type { CSSProperties } from "react"
@@ -128,9 +128,9 @@ const getSubjectStyles = (subject: string | undefined) => {
 
 const getTimeIcon = (time: string) => {
   const hour = Number.parseInt(time.split(":")[0])
-  if (hour < 10) return <Sunrise className="w-4 h-4 text-orange-400 flex-shrink-0" />
-  if (hour < 15) return <Sun className="w-4 h-4 text-yellow-400 flex-shrink-0" />
-  return <Moon className="w-4 h-4 text-blue-400 flex-shrink-0" />
+  if (hour < 10) return <Sunrise className="size-4 text-orange-400 flex-shrink-0 mt-0.5" />
+  if (hour < 15) return <Sun className="size-4 text-yellow-400 flex-shrink-0 mt-0.5" />
+  return <Moon className="size-4 text-blue-400 flex-shrink-0 mt-0.5" />
 }
 
 const formatSubject = (subject: string): string => {
@@ -141,13 +141,13 @@ const formatSubject = (subject: string): string => {
 }
 
 export function ScheduleItem({ row, index, selectedClass, teacherData, compact }: ScheduleItemProps) {
-  const teacherInfo = teacherData.find((teacher) => teacher.Code === row[`Class_${selectedClass}` as keyof ScheduleRow])
-  const isRegularClass = !isNaN(Number.parseInt(row.Period))
-  const subjectStyles = getSubjectStyles(teacherInfo?.Subject)
+  const teacherInfo = teacherData.find((teacher) => teacher.code === row[selectedClass as keyof ScheduleRow])
+  const isRegularClass = !isNaN(Number.parseInt(row.period))
+  const subjectStyles = getSubjectStyles(teacherInfo?.subject)
 
   return (
     <Card
-      className={cn("flex overflow-hidden transition-all hover:shadow-lg motion-preset-expand motion-duration-400 group", compact ? "h-24" : "h-40 md:h-32")}
+      className={cn("flex overflow-hidden transition-all hover:shadow-lg motion-preset-expand motion-duration-400 group", compact ? "h-24" : "h-44 sm:h-40 md:h-36")}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
     >
       {/* Left Side - Accent */}
@@ -160,17 +160,17 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-white/10 transition-opacity" />
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
-            <span className="text-3xl font-bold tracking-tight">{row.Period}</span>
-            {row.EndPeriod !== row.Period && (
+            <span className="text-3xl font-bold tracking-tight">{row.period}</span>
+            {row.endPeriod !== row.period && (
               <div className="flex items-center gap-px text-sm mt-1">
                 {/* <div className="h-3 w-[1px] bg-white/60 rotate-12" /> */}
-                <ArrowRight className="w-3 h-3 flex-shrink-0" />
-                <span className="font-medium">{row.EndPeriod}</span>
+                <ArrowRight className="size-3 flex-shrink-0" />
+                <span className="font-medium">{row.endPeriod}</span>
               </div>
             )}
           </div>
         ) : (
-          <Coffee className="w-8 h-8 text-white flex-shrink-0" />
+          <Coffee className="size-8 text-white flex-shrink-0" />
         )}
       </div>
 
@@ -180,22 +180,23 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
           <div>
             <h3 className="font-semibold capitalize">
               {isRegularClass && teacherInfo ? (
-                <div className="flex items-start gap-2">
-                  <Book className={cn("w-5 h-5 mt-0.5 flex-shrink-0", subjectStyles.text)} />
+                <div className="flex items-center gap-2">
+                  <Book className={cn("size-5 flex-shrink-0", subjectStyles.text)} />
                   <span className={cn("bg-gradient-to-r bg-clip-text", subjectStyles.gradient, "text-transparent")}>
-                    {formatSubject(teacherInfo.Subject)}
+                    {formatSubject(teacherInfo.subject)}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
+                  {isRegularClass ? <Star className={cn("size-5 flex-shrink-0", subjectStyles.text)} /> : <Coffee className={cn("size-5 flex-shrink-0", subjectStyles.text)} />}
                   <span
                     className={cn(
                       "bg-gradient-to-r bg-clip-text capitalize",
-                      getSubjectStyles(row[`Class_${selectedClass}` as keyof ScheduleRow]).gradient,
+                      getSubjectStyles(row[selectedClass as keyof ScheduleRow]).gradient,
                       "text-transparent",
                     )}
                   >
-                    {row[`Class_${selectedClass}` as keyof ScheduleRow]}
+                    {row[selectedClass as keyof ScheduleRow]}
                   </span>
                 </div>
               )}
@@ -204,18 +205,18 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
 
           {!compact && <div className="flex flex-col gap-2 text-sm">
             <div className="flex items-start gap-2 text-muted-foreground/80">
-              {getTimeIcon(row.Time)}
+              {getTimeIcon(row.time)}
               <span className="tabular-nums">
-                {row.Time} - {row.EndTime}
+                {row.time} - {row.endTime}
               </span>
             </div>
 
             {isRegularClass && teacherInfo && (
               <div className="flex items-start gap-2 text-muted-foreground/80">
-                <User className="w-4 h-4 mt-0.5 text-primary/70 flex-shrink-0" />
+                <User className="size-4 mt-0.5 text-primary/70 flex-shrink-0" />
                 <span className="capitalize">
-                  {teacherInfo.Name.split(",")[0].toLowerCase()}
-                  <span className="normal-case">,{teacherInfo.Name.split(",")[1]}</span>
+                  {teacherInfo.name.split(",")[0].toLowerCase()}
+                  <span className="normal-case">,{teacherInfo.name.split(",")[1]}</span>
                 </span>
               </div>
             )}

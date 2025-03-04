@@ -1,25 +1,45 @@
 export interface ScheduleRow {
-  Time: string
-  Period: string
-  Class_A: string
-  Class_B: string
-  Class_C: string
-  Class_D: string
-  Class_E: string
-  Class_F: string
-  Class_G: string
-  Class_H: string
-  Class_I: string
-  Class_J: string
+  time: string
+  period: string
+  "X-A": string
+  "X-B": string
+  "X-C": string
+  "X-D": string
+  "X-E": string
+  "X-F": string
+  "X-G": string
+  "X-H": string
+  "X-I": string
+  "X-J": string
+  "XI-A": string
+  "XI-B": string
+  "XI-C": string
+  "XI-D": string
+  "XI-E": string
+  "XI-F": string
+  "XI-G": string
+  "XI-H": string
+  "XI-I": string
+  "XI-J": string
+  "XII-A": string
+  "XII-B": string
+  "XII-C": string
+  "XII-D": string
+  "XII-E": string
+  "XII-F": string
+  "XII-G": string
+  "XII-H": string
+  "XII-I": string
+  "XII-J": string
 }
 
 export interface TeacherRow {
-  Code: string
-  Name: string
-  Subject: string
+  code: string
+  name: string
+  subject: string
 }
 
 export interface CombinedScheduleRow extends ScheduleRow {
-  EndTime: string
-  EndPeriod: string
+  endTime: string
+  endPeriod: string
 }
