@@ -8,12 +8,10 @@ import { execSync } from 'child_process'
 // https://vite.dev/config/
 export default defineConfig(() => {
   const commitDate = execSync('git log -1 --format=%cI').toString().replace(/^\s+|\s+$/g, '').trimEnd()
-  const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().replace(/^\s+|\s+$/g, '').trimEnd()
-  const tagName = execSync('git describe --tags --always --dirty').toString('utf8').replace(/^\s+|\s+$/g, '').trimEnd()
+  const commitHash = execSync('git rev-parse --short HEAD').toString().replace(/^\s+|\s+$/g, '').trimEnd()
 
   process.env.VITE_GIT_COMMIT_DATE = commitDate;
-  process.env.VITE_GIT_BRANCH_NAME = branchName;
-  process.env.VITE_TAG_NAME = tagName
+  process.env.VITE_GIT_COMMIT_HASH = commitHash;
 
   return {
     plugins: [react(), tailwindcss()],
