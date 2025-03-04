@@ -112,11 +112,12 @@ export function ScheduleViewer() {
           setSelectedDay(days[index]);
         }
       }
+      // TODO: Reimplement this feature for more classes
       // Letters A-J for classes
-      const classIndex = classes.indexOf(e.key.toUpperCase());
-      if (classIndex !== -1) {
-        setSelectedClass(classes[classIndex]);
-      }
+      // const classIndex = classes.indexOf(e.key.toUpperCase());
+      // if (classIndex !== -1) {
+      //   setSelectedClass(classes[classIndex]);
+      // }
     };
 
     window.addEventListener("keydown", handleKeyPress);
