@@ -180,7 +180,7 @@ export function ScheduleViewer() {
               rel="noopener noreferrer"
               className="underline text-blue-500"
             >
-              malik / velo
+              malik
             </a>
           </span>
         </div>
@@ -205,10 +205,10 @@ export function ScheduleViewer() {
         </Button>
         <ModeToggle className='ml-2' />
       </div>
-      <div className="flex flex-col items-center md:flex-row gap-2 mb-4">
+      <div className="flex flex-col items-center md:flex-row gap-2 mb-2 md:mb-4">
         <div className="flex gap-2 w-full md:w-auto">
           <Select onValueChange={handleClassChange} value={selectedClass}>
-            <SelectTrigger className="w-full md:w-[180px]">
+            <SelectTrigger className="w-full md:w-[120px]">
               <SelectValue placeholder="Select a class" />
             </SelectTrigger>
             <SelectContent>
@@ -254,9 +254,12 @@ export function ScheduleViewer() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+        <div className='text-zinc-900 dark:text-zinc-50 text-xs text-nowrap'>
+          Last updated: {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString("en-GB")}
+        </div>
       </div>
       <ScrollArea className="h-[calc(100vh-200px)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 grow min-h-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 grow min-h-0">
           {combinedSchedule.map((row, index) => (
             row.Period != "Selesai" && <ScheduleItem
             key={`${index}-${selectedClass}-${selectedDay}`}
