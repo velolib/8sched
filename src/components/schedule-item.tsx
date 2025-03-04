@@ -1,17 +1,30 @@
-"use client"
+"use client";
 
-import { Book, User, Coffee, Moon, Sun, Sunrise, ArrowRight, Star } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import type { CSSProperties } from "react"
-import type { CombinedScheduleRow, ScheduleRow, TeacherRow } from "@/types/schedule"
+import {
+  Book,
+  User,
+  Coffee,
+  Moon,
+  Sun,
+  Sunrise,
+  ArrowRight,
+  Star,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import type { CSSProperties } from "react";
+import type {
+  CombinedScheduleRow,
+  ScheduleRow,
+  TeacherRow,
+} from "@/types/schedule";
 
 interface ScheduleItemProps {
-  row: CombinedScheduleRow
-  index: number
-  selectedClass: string
-  teacherData: TeacherRow[]
-  compact: boolean
+  row: CombinedScheduleRow;
+  index: number;
+  selectedClass: string;
+  teacherData: TeacherRow[];
+  compact: boolean;
 }
 
 // Combined subject styling configuration
@@ -115,54 +128,68 @@ const SUBJECT_STYLES = {
     gradient: "bg-gradient-to-br from-zinc-400 to-gray-500",
     text: "text-zinc-400",
   },
-} as const
+} as const;
 
-
-const UPPERCASE_SUBJECTS = new Set(["PPKN", "PJOK", "PKWU"])
+const UPPERCASE_SUBJECTS = new Set(["PPKN", "PJOK", "PKWU"]);
 
 const getSubjectStyles = (subject: string | undefined) => {
-  if (!subject) subject = "default"
-  const subjectKey = subject.toLowerCase() as keyof typeof SUBJECT_STYLES
-  return SUBJECT_STYLES[subjectKey] || SUBJECT_STYLES.default
-}
+  if (!subject) subject = "default";
+  const subjectKey = subject.toLowerCase() as keyof typeof SUBJECT_STYLES;
+  return SUBJECT_STYLES[subjectKey] || SUBJECT_STYLES.default;
+};
 
 const getTimeIcon = (time: string) => {
-  const hour = Number.parseInt(time.split(":")[0])
-  if (hour < 10) return <Sunrise className="size-4 text-orange-400 flex-shrink-0 mt-0.5" />
-  if (hour < 15) return <Sun className="size-4 text-yellow-400 flex-shrink-0 mt-0.5" />
-  return <Moon className="size-4 text-blue-400 flex-shrink-0 mt-0.5" />
-}
+  const hour = Number.parseInt(time.split(":")[0]);
+  if (hour < 10)
+    return <Sunrise className="mt-0.5 size-4 flex-shrink-0 text-orange-400" />;
+  if (hour < 15)
+    return <Sun className="mt-0.5 size-4 flex-shrink-0 text-yellow-400" />;
+  return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />;
+};
 
 const formatSubject = (subject: string): string => {
   if (UPPERCASE_SUBJECTS.has(subject.toUpperCase())) {
-    return subject.toUpperCase()
+    return subject.toUpperCase();
   }
-  return subject.toLowerCase()
-}
+  return subject.toLowerCase();
+};
 
-export function ScheduleItem({ row, index, selectedClass, teacherData, compact }: ScheduleItemProps) {
-  const teacherInfo = teacherData.find((teacher) => teacher.code === row[selectedClass as keyof ScheduleRow])
-  const isRegularClass = !isNaN(Number.parseInt(row.period))
-  const subjectStyles = getSubjectStyles(teacherInfo?.subject)
+export function ScheduleItem({
+  row,
+  index,
+  selectedClass,
+  teacherData,
+  compact,
+}: ScheduleItemProps) {
+  const teacherInfo = teacherData.find(
+    (teacher) => teacher.code === row[selectedClass as keyof ScheduleRow],
+  );
+  const isRegularClass = !isNaN(Number.parseInt(row.period));
+  const subjectStyles = getSubjectStyles(teacherInfo?.subject);
 
   return (
     <Card
-      className={cn("flex overflow-hidden transition-all hover:shadow-lg motion-preset-expand motion-duration-400 group", compact ? "h-24" : "h-44 sm:h-40 md:h-36")}
+      className={cn(
+        "motion-preset-expand motion-duration-400 group flex overflow-hidden transition-all hover:shadow-lg",
+        compact ? "h-24" : "h-44 sm:h-40 md:h-36",
+      )}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
     >
       {/* Left Side - Accent */}
       <div
         className={cn(
-          "w-24 flex flex-col items-center justify-center p-4 text-center relative overflow-hidden group",
+          "group relative flex w-24 flex-col items-center justify-center overflow-hidden p-4 text-center",
           subjectStyles.gradient,
         )}
       >
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-white/10 transition-opacity" />
+        <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
-            <span className="text-3xl font-bold tracking-tight">{row.period}</span>
+            <span className="text-3xl font-bold tracking-tight">
+              {row.period}
+            </span>
             {row.endPeriod !== row.period && (
-              <div className="flex items-center gap-px text-sm mt-1">
+              <div className="mt-1 flex items-center gap-px text-sm">
                 {/* <div className="h-3 w-[1px] bg-white/60 rotate-12" /> */}
                 <ArrowRight className="size-3 flex-shrink-0" />
                 <span className="font-medium">{row.endPeriod}</span>
@@ -170,29 +197,51 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
             )}
           </div>
         ) : (
-          <Coffee className="size-8 text-white flex-shrink-0" />
+          <Coffee className="size-8 flex-shrink-0 text-white" />
         )}
       </div>
 
       {/* Right Side - Content */}
-      <div className={cn("flex flex-1 p-4 bg-card group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900 transition-colors", compact ? "items-center" : "flex-col justify-center")}>
+      <div
+        className={cn(
+          "bg-card flex flex-1 p-4 transition-colors group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900",
+          compact ? "items-center" : "flex-col justify-center",
+        )}
+      >
         <div className="space-y-3">
           <div>
             <h3 className="font-semibold capitalize">
               {isRegularClass && teacherInfo ? (
                 <div className="flex items-center gap-2">
-                  <Book className={cn("size-5 flex-shrink-0", subjectStyles.text)} />
-                  <span className={cn("bg-gradient-to-r bg-clip-text", subjectStyles.gradient, "text-transparent")}>
+                  <Book
+                    className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                  />
+                  <span
+                    className={cn(
+                      "bg-gradient-to-r bg-clip-text",
+                      subjectStyles.gradient,
+                      "text-transparent",
+                    )}
+                  >
                     {formatSubject(teacherInfo.subject)}
                   </span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  {isRegularClass ? <Star className={cn("size-5 flex-shrink-0", subjectStyles.text)} /> : <Coffee className={cn("size-5 flex-shrink-0", subjectStyles.text)} />}
+                  {isRegularClass ? (
+                    <Star
+                      className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                    />
+                  ) : (
+                    <Coffee
+                      className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                    />
+                  )}
                   <span
                     className={cn(
                       "bg-gradient-to-r bg-clip-text capitalize",
-                      getSubjectStyles(row[selectedClass as keyof ScheduleRow]).gradient,
+                      getSubjectStyles(row[selectedClass as keyof ScheduleRow])
+                        .gradient,
                       "text-transparent",
                     )}
                   >
@@ -203,26 +252,30 @@ export function ScheduleItem({ row, index, selectedClass, teacherData, compact }
             </h3>
           </div>
 
-          {!compact && <div className="flex flex-col gap-2 text-sm">
-            <div className="flex items-start gap-2 text-muted-foreground/80">
-              {getTimeIcon(row.time)}
-              <span className="tabular-nums">
-                {row.time} - {row.endTime}
-              </span>
-            </div>
-
-            {isRegularClass && teacherInfo && (
-              <div className="flex items-start gap-2 text-muted-foreground/80">
-                <User className="size-4 mt-0.5 text-primary/70 flex-shrink-0" />
-                <span className="capitalize">
-                  {teacherInfo.name.split(",")[0].toLowerCase()}
-                  <span className="normal-case">,{teacherInfo.name.split(",")[1]}</span>
+          {!compact && (
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="text-muted-foreground/80 flex items-start gap-2">
+                {getTimeIcon(row.time)}
+                <span className="tabular-nums">
+                  {row.time} - {row.endTime}
                 </span>
               </div>
-            )}
-          </div>}
+
+              {isRegularClass && teacherInfo && (
+                <div className="text-muted-foreground/80 flex items-start gap-2">
+                  <User className="text-primary/70 mt-0.5 size-4 flex-shrink-0" />
+                  <span className="capitalize">
+                    {teacherInfo.name.split(",")[0].toLowerCase()}
+                    <span className="normal-case">
+                      ,{teacherInfo.name.split(",")[1]}
+                    </span>
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </Card>
-  )
+  );
 }

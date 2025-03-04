@@ -1,8 +1,8 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ScheduleViewer } from './ScheduleViewer'
-import { ThemeProvider } from './components/theme-provider'
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ScheduleViewer } from "./ScheduleViewer";
+import { ThemeProvider } from "./components/theme-provider";
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 
 export function App() {
   return (
@@ -11,6 +11,5 @@ export function App() {
         <ScheduleViewer />
       </ThemeProvider>
     </QueryClientProvider>
-  )
+  );
 }
-

@@ -1,29 +1,70 @@
-import { useMemo, useEffect } from "react"
-import { useQuery } from "@tanstack/react-query"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Code, Keyboard, LayoutGrid } from "lucide-react"
-import type { ScheduleRow, TeacherRow, CombinedScheduleRow } from "./types/schedule"
-import Papa from "papaparse"
-import { ScheduleItem } from "./components/schedule-item"
-import { useLocalStorage, useSessionStorage } from "@uidotdev/usehooks"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ModeToggle } from './components/mode-toggle'
-import { Button } from './components/ui/button'
-import { Toggle } from './components/ui/toggle'
+import { useMemo, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Code, Keyboard, LayoutGrid } from "lucide-react";
+import type {
+  ScheduleRow,
+  TeacherRow,
+  CombinedScheduleRow,
+} from "./types/schedule";
+import Papa from "papaparse";
+import { ScheduleItem } from "./components/schedule-item";
+import { useLocalStorage, useSessionStorage } from "@uidotdev/usehooks";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { ModeToggle } from "./components/mode-toggle";
+import { Button } from "./components/ui/button";
+import { Toggle } from "./components/ui/toggle";
 
 const classes = [
-  "X-A", "X-B", "X-C", "X-D", "X-E", "X-F", "X-G", "X-H", "X-I", "X-J",
-  "XI-A", "XI-B", "XI-C", "XI-D", "XI-E", "XI-F", "XI-G", "XI-H", "XI-I", "XI-J",
-  "XII-A", "XII-B", "XII-C", "XII-D", "XII-E", "XII-F", "XII-G", "XII-H", "XII-I", "XII-J",
-]
-const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"]
+  "X-A",
+  "X-B",
+  "X-C",
+  "X-D",
+  "X-E",
+  "X-F",
+  "X-G",
+  "X-H",
+  "X-I",
+  "X-J",
+  "XI-A",
+  "XI-B",
+  "XI-C",
+  "XI-D",
+  "XI-E",
+  "XI-F",
+  "XI-G",
+  "XI-H",
+  "XI-I",
+  "XI-J",
+  "XII-A",
+  "XII-B",
+  "XII-C",
+  "XII-D",
+  "XII-E",
+  "XII-F",
+  "XII-G",
+  "XII-H",
+  "XII-I",
+  "XII-J",
+];
+const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
 
 export function ScheduleViewer() {
-
   useEffect(() => {
-    const storedHash = localStorage.getItem('VITE_GIT_COMMIT_HASH');
+    const storedHash = localStorage.getItem("VITE_GIT_COMMIT_HASH");
     const currentHash = import.meta.env.VITE_GIT_COMMIT_HASH;
 
     console.log("Stored Commit Hash:", storedHash);
@@ -32,49 +73,55 @@ export function ScheduleViewer() {
     if (!storedHash) {
       console.log("No stored hash found. Setting initial commit hash.");
       localStorage.clear();
-      localStorage.setItem('VITE_GIT_COMMIT_HASH', currentHash);
+      localStorage.setItem("VITE_GIT_COMMIT_HASH", currentHash);
     }
 
     if (storedHash !== currentHash) {
       console.log("Commit hash changed! Updating localStorage...");
-      localStorage.clear()
-      localStorage.setItem('VITE_GIT_COMMIT_HASH', currentHash);
+      localStorage.clear();
+      localStorage.setItem("VITE_GIT_COMMIT_HASH", currentHash);
     } else {
       console.log("Commit hash is the same. No update needed.");
     }
-  }, [])
+  }, []);
 
-  const [selectedClass, setSelectedClass] = useLocalStorage("selectedClass", "X-A")
-  const [selectedDay, setSelectedDay] = useSessionStorage("selectedDay", days[new Date().getDay() - 1] || "Senin")
-  const [compact, setCompact] = useLocalStorage("compact", false)
+  const [selectedClass, setSelectedClass] = useLocalStorage(
+    "selectedClass",
+    "X-A",
+  );
+  const [selectedDay, setSelectedDay] = useSessionStorage(
+    "selectedDay",
+    days[new Date().getDay() - 1] || "Senin",
+  );
+  const [compact, setCompact] = useLocalStorage("compact", false);
 
   const handleClassChange = (newClass: string) => {
-    setSelectedClass(newClass)
-  }
+    setSelectedClass(newClass);
+  };
 
   const handleDayChange = (newDay: string) => {
-    setSelectedDay(newDay)
-  }
+    setSelectedDay(newDay);
+  };
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Number keys 1-5 for days
       if (e.key >= "1" && e.key <= "5") {
-        const index = Number.parseInt(e.key) - 1
+        const index = Number.parseInt(e.key) - 1;
         if (index < days.length) {
-          setSelectedDay(days[index])
+          setSelectedDay(days[index]);
         }
       }
       // Letters A-J for classes
-      const classIndex = classes.indexOf(e.key.toUpperCase())
+      const classIndex = classes.indexOf(e.key.toUpperCase());
       if (classIndex !== -1) {
-        setSelectedClass(classes[classIndex])
+        setSelectedClass(classes[classIndex]);
       }
-    }
+    };
 
-    window.addEventListener("keydown", handleKeyPress)
-    return () => window.removeEventListener("keydown", handleKeyPress)
-  }, [setSelectedClass, setSelectedDay])
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [setSelectedClass, setSelectedDay]);
 
   const {
     data: scheduleData,
@@ -84,12 +131,12 @@ export function ScheduleViewer() {
   } = useQuery<ScheduleRow[]>({
     queryKey: ["scheduleData"],
     queryFn: async () => {
-      const response = await fetch("/data.csv")
+      const response = await fetch("/data.csv");
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const text = await response.text()
-      const rows = Papa.parse(text, { delimiter: "," }).data as string[][]
+      const text = await response.text();
+      const rows = Papa.parse(text, { delimiter: "," }).data as string[][];
       return rows.map((row) => ({
         time: row[0] || "",
         period: row[1] || "",
@@ -123,9 +170,9 @@ export function ScheduleViewer() {
         "XII-H": row[29] || "",
         "XII-I": row[30] || "",
         "XII-J": row[31] || "",
-      }))
+      }));
     },
-  })
+  });
 
   const {
     data: teacherData,
@@ -135,112 +182,122 @@ export function ScheduleViewer() {
   } = useQuery<TeacherRow[]>({
     queryKey: ["teacherData"],
     queryFn: async () => {
-      const response = await fetch("/data_guru.csv")
+      const response = await fetch("/data_guru.csv");
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`)
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      const text = await response.text()
-      const rows = Papa.parse(text, { delimiter: "," }).data as string[][]
+      const text = await response.text();
+      const rows = Papa.parse(text, { delimiter: "," }).data as string[][];
       return rows.map((row) => ({
         code: row[0] || "",
         name: row[1] || "",
         subject: row[2] || "",
-      }))
+      }));
     },
-  })
+  });
 
   // Group schedule by day
   const combinedSchedule = useMemo(() => {
     const groupSchedules = (data: ScheduleRow[]) => {
-      const result: ScheduleRow[][] = []
-      let currentDay: ScheduleRow[] = []
+      const result: ScheduleRow[][] = [];
+      let currentDay: ScheduleRow[] = [];
 
       data.forEach((item) => {
         if (item.time === "06:30") {
           if (currentDay.length > 0) {
-            result.push(currentDay)
+            result.push(currentDay);
           }
-          currentDay = []
+          currentDay = [];
         }
-        currentDay.push(item)
-      })
+        currentDay.push(item);
+      });
 
       if (currentDay.length > 0) {
-        result.push(currentDay)
+        result.push(currentDay);
       }
 
-      return result
-    }
+      return result;
+    };
 
-    if (!scheduleData) return []
+    if (!scheduleData) return [];
 
-    const combineSchedule = (schedule: ScheduleRow[]): CombinedScheduleRow[] => {
-      const combined: CombinedScheduleRow[] = []
-      let current: CombinedScheduleRow | null = null
+    const combineSchedule = (
+      schedule: ScheduleRow[],
+    ): CombinedScheduleRow[] => {
+      const combined: CombinedScheduleRow[] = [];
+      let current: CombinedScheduleRow | null = null;
 
       for (let i = 0; i < schedule.length; i++) {
-        const row = schedule[i]
-        const nextRow = i < schedule.length - 1 ? schedule[i + 1] : null
+        const row = schedule[i];
+        const nextRow = i < schedule.length - 1 ? schedule[i + 1] : null;
 
         if (!row[selectedClass as keyof ScheduleRow]) {
-          continue
+          continue;
         }
 
         if (
           !current ||
           row[selectedClass as keyof ScheduleRow] !==
-          current[selectedClass as keyof ScheduleRow] ||
+            current[selectedClass as keyof ScheduleRow] ||
           !row.period
         ) {
           if (current) {
-            combined.push(current)
+            combined.push(current);
           }
           current = {
             ...row,
             endTime: nextRow ? nextRow.time : "Selesai",
             endPeriod: row.period,
-          }
+          };
         } else {
-          current.endTime = nextRow ? nextRow.time : "Selesai"
-          current.endPeriod = row.period
+          current.endTime = nextRow ? nextRow.time : "Selesai";
+          current.endPeriod = row.period;
         }
       }
 
       if (current) {
-        combined.push(current)
+        combined.push(current);
       }
 
-      return combined
-    }
+      return combined;
+    };
 
     // Filter schedule by selected day
-    const filteredSchedule = groupSchedules(scheduleData)[days.indexOf(selectedDay)]
+    const filteredSchedule =
+      groupSchedules(scheduleData)[days.indexOf(selectedDay)];
 
-    return combineSchedule(filteredSchedule)
-  }, [scheduleData, selectedDay, selectedClass])
+    return combineSchedule(filteredSchedule);
+  }, [scheduleData, selectedDay, selectedClass]);
 
-  if (scheduleLoading || teacherLoading) return <div className="p-4 text-center">Loading...</div>
+  if (scheduleLoading || teacherLoading)
+    return <div className="p-4 text-center">Loading...</div>;
   if (scheduleError || !scheduleSuccess || teacherError || !teacherSuccess)
-    return <div className="p-4 text-center text-red-500">Error: {(scheduleError as Error).message}</div>
+    return (
+      <div className="p-4 text-center text-red-500">
+        Error: {(scheduleError as Error).message}
+      </div>
+    );
 
   return (
-    <div className="container mx-auto p-4 px-8 h-dvh flex flex-col">
-      <div className="flex mb-4 items-center">
-        <div className="flex sm:items-center sm:flex-row flex-col">
-          <h1 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-50">8Sched</h1>
-          <span className="text-xs sm:text-sm text-zinc-900 dark:text-zinc-50 sm:ml-2 mt-1">
+    <div className="container mx-auto flex h-dvh flex-col p-4 px-8">
+      <div className="mb-4 flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center">
+          <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl dark:text-zinc-50">
+            8Sched
+          </h1>
+          <span className="mt-1 text-xs text-zinc-900 sm:ml-2 sm:text-sm dark:text-zinc-50">
             by{" "}
             <a
               href="https://velolib.github.io/"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline text-blue-500"
+              className="text-blue-500 underline"
             >
               malik
             </a>
           </span>
         </div>
-        <Button variant={'outline'} className='ml-auto hidden md:flex' asChild>
+        <Button variant={"outline"} className="ml-auto hidden md:flex" asChild>
           <a
             href="https://github.com/velolib/8sched"
             target="_blank"
@@ -249,7 +306,11 @@ export function ScheduleViewer() {
             <Code className="size-4" /> <span>Source Code</span>
           </a>
         </Button>
-        <Button variant={'outline'} className='ml-auto md:hidden flex items-center justify-center' size='icon'>
+        <Button
+          variant={"outline"}
+          className="ml-auto flex items-center justify-center md:hidden"
+          size="icon"
+        >
           <a
             href="https://github.com/velolib/8sched"
             target="_blank"
@@ -259,10 +320,10 @@ export function ScheduleViewer() {
             <Code className="size-4" />
           </a>
         </Button>
-        <ModeToggle className='ml-2' />
+        <ModeToggle className="ml-2" />
       </div>
-      <div className="flex flex-col items-center md:flex-row gap-2 mb-2 md:mb-4">
-        <div className="flex gap-2 w-full md:w-auto">
+      <div className="mb-2 flex flex-col items-center gap-2 md:mb-4 md:flex-row">
+        <div className="flex w-full gap-2 md:w-auto">
           <Select onValueChange={handleClassChange} value={selectedClass}>
             <SelectTrigger className="w-full md:w-[120px]">
               <SelectValue placeholder="Select a class" />
@@ -281,13 +342,22 @@ export function ScheduleViewer() {
               </div>
             </SelectContent>
           </Select>
-          <Toggle aria-label="Toggle compact" pressed={compact} onPressedChange={setCompact} variant='outline'>
+          <Toggle
+            aria-label="Toggle compact"
+            pressed={compact}
+            onPressedChange={setCompact}
+            variant="outline"
+          >
             <LayoutGrid className="size-4 text-zinc-900 dark:text-zinc-50" />
           </Toggle>
         </div>
 
-        <Tabs value={selectedDay} onValueChange={handleDayChange} className="w-full">
-          <TabsList className="w-full justify-start flex-wrap">
+        <Tabs
+          value={selectedDay}
+          onValueChange={handleDayChange}
+          className="w-full"
+        >
+          <TabsList className="w-full flex-wrap justify-start">
             {days.map((day) => (
               <TabsTrigger key={day} value={day} className="flex-1">
                 <span className="hidden sm:inline">{day}</span>
@@ -299,7 +369,12 @@ export function ScheduleViewer() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button className="hidden md:flex items-center justify-center aspect-square" type='button' size={'icon'} variant={'ghost'}>
+              <Button
+                className="hidden aspect-square items-center justify-center md:flex"
+                type="button"
+                size={"icon"}
+                variant={"ghost"}
+              >
                 <Keyboard className="size-4" />
               </Button>
             </TooltipTrigger>
@@ -310,24 +385,31 @@ export function ScheduleViewer() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className='text-zinc-900 dark:text-zinc-50 text-xs text-nowrap'>
-          Last updated: {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString("en-GB", { month: "long", day: "2-digit", year: "numeric" })}
+        <div className="text-xs text-nowrap text-zinc-900 dark:text-zinc-50">
+          Last updated:{" "}
+          {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString(
+            "en-GB",
+            { month: "long", day: "2-digit", year: "numeric" },
+          )}
         </div>
       </div>
       <ScrollArea className="h-[calc(100vh-200px)]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4 grow min-h-0">
-          {combinedSchedule.map((row, index) => (
-            row.period != "Selesai" && <ScheduleItem
-              key={`${index}-${selectedClass}-${selectedDay}`}
-              row={row}
-              index={index}
-              selectedClass={selectedClass}
-              teacherData={teacherData}
-              compact={compact}
-            />
-          ))}
+        <div className="grid min-h-0 grow grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
+          {combinedSchedule.map(
+            (row, index) =>
+              row.period != "Selesai" && (
+                <ScheduleItem
+                  key={`${index}-${selectedClass}-${selectedDay}`}
+                  row={row}
+                  index={index}
+                  selectedClass={selectedClass}
+                  teacherData={teacherData}
+                  compact={compact}
+                />
+              ),
+          )}
         </div>
       </ScrollArea>
     </div>
-  )
+  );
 }
