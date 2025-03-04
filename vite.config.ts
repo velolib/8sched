@@ -6,7 +6,7 @@ import { execSync } from 'child_process'
 
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(() => {
   const commitDate = execSync('git log -1 --format=%cI').toString().replace(/^\s+|\s+$/g, '').trimEnd()
   const branchName = execSync('git rev-parse --abbrev-ref HEAD').toString().replace(/^\s+|\s+$/g, '').trimEnd()
   const tagName = execSync('git describe --tags --always --dirty').toString('utf8').replace(/^\s+|\s+$/g, '').trimEnd()
