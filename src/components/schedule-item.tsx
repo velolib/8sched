@@ -154,6 +154,22 @@ const formatSubject = (subject: string): string => {
   return subject.toLowerCase();
 };
 
+// Helper to calculate duration between two times (HH:mm)
+function getDuration(start: string, end: string): string {
+  const [startH, startM] = start.split(":").map(Number);
+  const [endH, endM] = end.split(":").map(Number);
+  const minutes = (endH * 60 + endM) - (startH * 60 + startM);
+  if (minutes <= 0) return "";
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  let result = "(";
+  if (h > 0) result += `${h} hour${h > 1 ? "s" : ""}`;
+  if (h > 0 && m > 0) result += ", ";
+  if (m > 0) result += `${m} min`;
+  result += ")";
+  return result;
+}
+
 export function ScheduleItem({
   row,
   index,
@@ -257,7 +273,7 @@ export function ScheduleItem({
               <div className="text-muted-foreground/80 flex items-start gap-2">
                 {getTimeIcon(row.time)}
                 <span className="tabular-nums">
-                  {row.time} - {row.endTime}
+                  {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
                 </span>
               </div>
 
