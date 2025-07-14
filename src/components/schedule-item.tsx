@@ -18,6 +18,7 @@ import type {
   ScheduleRow,
   TeacherRow,
 } from "@/types/schedule";
+import { days } from '@/lib/consts';
 
 interface ScheduleItemProps {
   row: CombinedScheduleRow;
@@ -25,6 +26,7 @@ interface ScheduleItemProps {
   selectedClass: string;
   teacherData: TeacherRow[];
   compact: boolean;
+  day: string;
 }
 
 // Combined subject styling configuration
@@ -176,6 +178,7 @@ export function ScheduleItem({
   selectedClass,
   teacherData,
   compact,
+  day,
 }: ScheduleItemProps) {
   const teacherInfo = teacherData.find(
     (teacher) => teacher.code === row[selectedClass as keyof ScheduleRow],
@@ -183,11 +186,25 @@ export function ScheduleItem({
   const isRegularClass = !isNaN(Number.parseInt(row.period));
   const subjectStyles = getSubjectStyles(teacherInfo?.subject);
 
+  const currentDate = new Date();
+  const parsedStartTime = row.time.split(":").map(Number);
+  const parsedEndTime = row.endTime.split(":").map(Number);
+
+  // Improved isNow algorithm
+  let currentDayIndex = currentDate.getDay() - 1; // 0=Monday, 6=Sunday
+  if (currentDate.getDay() === -1) currentDayIndex = 6; // Map Sunday to Friday
+  const scheduleDayIndex = days.indexOf(day);
+  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+  const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1];
+  const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1];
+  const isNow = currentDayIndex === scheduleDayIndex && currentMinutes >= startMinutes && currentMinutes < endMinutes;
+
   return (
     <Card
       className={cn(
         "motion-preset-expand motion-duration-400 group flex overflow-hidden transition-all hover:shadow-lg",
         compact ? "h-24" : "h-44 sm:h-40 md:h-36",
+        isNow ? subjectStyles.gradient : "bg-card",
       )}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
     >
@@ -195,10 +212,10 @@ export function ScheduleItem({
       <div
         className={cn(
           "group relative flex w-24 flex-col items-center justify-center overflow-hidden p-4 text-center",
-          subjectStyles.gradient,
+          isNow ? "" : subjectStyles.gradient,
         )}
       >
-        <div className="absolute inset-0 bg-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className={cn("absolute inset-0 bg-white/10 opacity-0 transition-opacity", isNow ? "" : "group-hover:opacity-100")} />
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
             <span className="text-3xl font-bold tracking-tight">
@@ -220,8 +237,9 @@ export function ScheduleItem({
       {/* Right Side - Content */}
       <div
         className={cn(
-          "bg-card flex flex-1 p-4 transition-colors group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900",
+          "bg-card flex flex-1 p-4",
           compact ? "items-center" : "flex-col justify-center",
+          isNow ? "" : "transition-colors group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900"
         )}
       >
         <div className="space-y-3">
@@ -230,12 +248,12 @@ export function ScheduleItem({
               {isRegularClass && teacherInfo ? (
                 <div className="flex items-center gap-2">
                   <Book
-                    className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                    className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
                   />
                   <span
                     className={cn(
                       "bg-gradient-to-r bg-clip-text",
-                      subjectStyles.gradient,
+                      isNow ? "bg-white" : subjectStyles.gradient,
                       "text-transparent",
                     )}
                   >
@@ -246,19 +264,19 @@ export function ScheduleItem({
                 <div className="flex items-center gap-2">
                   {isRegularClass ? (
                     <Star
-                      className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                      className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
                     />
                   ) : (
                     <Coffee
-                      className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                      className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
                     />
                   )}
                   <span
                     className={cn(
                       "bg-gradient-to-r bg-clip-text capitalize",
-                      getSubjectStyles(row[selectedClass as keyof ScheduleRow])
-                        .gradient,
                       "text-transparent",
+                      isNow ? "text-white" :getSubjectStyles(row[selectedClass as keyof ScheduleRow])
+                        .gradient,
                     )}
                   >
                     {row[selectedClass as keyof ScheduleRow]}
@@ -279,8 +297,8 @@ export function ScheduleItem({
 
               {isRegularClass && teacherInfo && (
                 <div className="text-muted-foreground/80 flex items-start gap-2">
-                  <User className="text-primary/70 mt-0.5 size-4 flex-shrink-0" />
-                  <span className="capitalize">
+                  <User className={cn("mt-0.5 size-4 flex-shrink-0", isNow ? "text-white" : "text-primary/70")} />
+                  <span className={cn("capitalize", isNow ? "text-white" : "text-primary")}>
                     {teacherInfo.name.split(",")[0].toLowerCase()}
                     <span className="normal-case">
                       ,{teacherInfo.name.split(",")[1]}

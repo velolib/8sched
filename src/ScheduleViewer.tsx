@@ -27,6 +27,7 @@ import {
 import { ModeToggle } from "./components/mode-toggle";
 import { Button } from "./components/ui/button";
 import { Toggle } from "./components/ui/toggle";
+import { days } from "@/lib/consts";
 
 const classes = [
   "X-A",
@@ -60,7 +61,6 @@ const classes = [
   "XII-I",
   "XII-J",
 ];
-const days = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"];
 
 export function ScheduleViewer() {
   useEffect(() => {
@@ -406,6 +406,7 @@ export function ScheduleViewer() {
                   selectedClass={selectedClass}
                   teacherData={teacherData}
                   compact={compact}
+                  day={selectedDay}
                 />
               ),
           )}
