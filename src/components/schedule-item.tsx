@@ -290,7 +290,7 @@ export function ScheduleItem({
             <div className="flex flex-col gap-2 text-sm">
               <div className="text-muted-foreground/80 flex items-start gap-2">
                 {getTimeIcon(row.time)}
-                <span className="tabular-nums">
+                <span className={cn("tabular-nums", isNow ? "text-white" : "text-primary")}>
                   {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
                 </span>
               </div>
