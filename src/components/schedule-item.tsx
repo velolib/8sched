@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { useEffect, useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import type {
   CombinedScheduleRow,
   ScheduleRow,
@@ -27,6 +27,7 @@ interface ScheduleItemProps {
   teacherData: TeacherRow[];
   compact: boolean;
   day: string;
+  currentDate: Date;
 }
 
 // Combined subject styling configuration
@@ -179,30 +180,13 @@ export function ScheduleItem({
   teacherData,
   compact,
   day,
+  currentDate,
 }: ScheduleItemProps) {
   const teacherInfo = teacherData.find(
     (teacher) => teacher.code === row[selectedClass as keyof ScheduleRow],
   );
   const isRegularClass = !isNaN(Number.parseInt(row.period));
   const subjectStyles = getSubjectStyles(teacherInfo?.subject);
-
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  const onFocus = () => {
-    setCurrentDate(new Date());
-  }
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentDate(new Date());
-    }, 60000); // Update every minute
-    window.addEventListener("focus", onFocus); // Update on focus
-    return () => {
-      clearInterval(intervalId);
-      window.removeEventListener("focus", onFocus);
-    };
-  }, []);
-
 
   const parsedStartTime = row.time.split(":").map(Number);
   const parsedEndTime = row.endTime.split(":").map(Number);

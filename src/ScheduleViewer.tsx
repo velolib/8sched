@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
@@ -275,6 +275,19 @@ export function ScheduleViewer() {
     return combineSchedule(filteredSchedule);
   }, [scheduleData, selectedDay, selectedClass]);
 
+  const [currentDate, setCurrentDate] = useState(new Date());
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentDate(new Date());
+    }, 60000); // Update every minute
+    const onFocus = () => setCurrentDate(new Date());
+    window.addEventListener("focus", onFocus);
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, []);
+
   if (scheduleLoading || teacherLoading)
     return <div className="p-4 text-center">Loading...</div>;
   if (scheduleError || !scheduleSuccess || teacherError || !teacherSuccess)
@@ -412,6 +425,7 @@ export function ScheduleViewer() {
                   teacherData={teacherData}
                   compact={compact}
                   day={selectedDay}
+                  currentDate={currentDate}
                 />
               ),
           )}
