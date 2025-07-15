@@ -188,19 +188,28 @@ export function ScheduleItem({
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  const onFocus = () => {
+    setCurrentDate(new Date());
+  }
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDate(new Date());
     }, 60000); // Update every minute
-    return () => clearInterval(intervalId); // Cleanup on unmount
+    window.addEventListener("focus", onFocus); // Update on focus
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
   }, []);
+
 
   const parsedStartTime = row.time.split(":").map(Number);
   const parsedEndTime = row.endTime.split(":").map(Number);
 
   // Improved isNow algorithm
-  let currentDayIndex = currentDate.getDay() - 1; // 0=Monday, 6=Sunday
-  if (currentDate.getDay() === -1) currentDayIndex = 6; // Map Sunday to Friday
+  let currentDayIndex = currentDate.getDay() - 1;
+  if (currentDate.getDay() === -1) currentDayIndex = 6;
   const scheduleDayIndex = days.indexOf(day);
   const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
   const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1];
