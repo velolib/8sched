@@ -112,17 +112,22 @@ export function ScheduleViewer() {
           setSelectedDay(days[index]);
         }
       }
-      // TODO: Reimplement this feature for more classes
-      // Letters A-J for classes
-      // const classIndex = classes.indexOf(e.key.toUpperCase());
-      // if (classIndex !== -1) {
-      //   setSelectedClass(classes[classIndex]);
-      // }
+
+      // Arrow keys for classes
+      const classIndex = classes.indexOf(selectedClass);
+      if (e.key === "ArrowRight") {
+        const nextIndex = (classIndex + 1) % classes.length;
+        setSelectedClass(classes[nextIndex]);
+      } else if (e.key === "ArrowLeft") {
+        const prevIndex =
+          (classIndex - 1 + classes.length) % classes.length;
+        setSelectedClass(classes[prevIndex]);
+      }
     };
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [setSelectedClass, setSelectedDay]);
+  }, [setSelectedClass, setSelectedDay, selectedClass]);
 
   const {
     data: scheduleData,
@@ -376,13 +381,13 @@ export function ScheduleViewer() {
                 size={"icon"}
                 variant={"ghost"}
               >
-                <Keyboard className="size-4" />
+                <Keyboard className="size-4 text-black dark:text-white" />
               </Button>
             </TooltipTrigger>
             <TooltipContent>
               <p>Keyboard shortcuts:</p>
               <p>1-5: Select day</p>
-              <p>A-J: Select class</p>
+                <p>←/→: Cycle classes</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -394,7 +399,7 @@ export function ScheduleViewer() {
           )}
         </div>
       </div>
-      <ScrollArea className="h-[calc(100vh-200px)]">
+      <ScrollArea className="flex-1 h-0">
         <div className="grid min-h-0 grow grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {combinedSchedule.map(
             (row, index) =>
