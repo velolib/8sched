@@ -115,10 +115,10 @@ export function ScheduleViewer() {
 
       // Arrow keys for classes
       const classIndex = classes.indexOf(selectedClass);
-      if (e.key === "ArrowRight") {
+      if (e.key === "ArrowUp") {
         const nextIndex = (classIndex + 1) % classes.length;
         setSelectedClass(classes[nextIndex]);
-      } else if (e.key === "ArrowLeft") {
+      } else if (e.key === "ArrowDown") {
         const prevIndex =
           (classIndex - 1 + classes.length) % classes.length;
         setSelectedClass(classes[prevIndex]);
