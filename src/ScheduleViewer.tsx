@@ -400,7 +400,8 @@ export function ScheduleViewer() {
             <TooltipContent>
               <p>Keyboard shortcuts:</p>
               <p>1-5: Select day</p>
-                <p>←/→: Cycle classes</p>
+              <p>←/→: Cycle days</p>
+              <p>↑/↓: Cycle classes</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
