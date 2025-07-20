@@ -185,6 +185,8 @@ export function ScheduleItem({
   const teacherInfo = teacherData.find(
     (teacher) => teacher.code === row[selectedClass as keyof ScheduleRow],
   );
+
+  // const currentDate = new Date(2025, 6, 18, 6, 45)
   const isRegularClass = !isNaN(Number.parseInt(row.period));
   const subjectStyles = getSubjectStyles(teacherInfo?.subject);
 
@@ -203,7 +205,7 @@ export function ScheduleItem({
   return (
     <Card
       className={cn(
-        "motion-preset-expand motion-duration-400 group flex overflow-hidden transition-all hover:shadow-lg",
+        "motion-preset-expand motion-duration-400 group overflow-hidden transition-all flex-row py-0 gap-0",
         compact ? "h-24" : "h-44 sm:h-40 md:h-36",
         isNow ? subjectStyles.gradient : "bg-card",
       )}
@@ -238,9 +240,9 @@ export function ScheduleItem({
       {/* Right Side - Content */}
       <div
         className={cn(
-          "bg-card flex flex-1 p-4",
+          "bg-card flex flex-1 p-4 px-6",
           compact ? "items-center" : "flex-col justify-center",
-          isNow ? "" : "transition-colors group-hover:bg-zinc-50 dark:group-hover:bg-zinc-900"
+          isNow ? "" : "transition-colors dark:hover:bg-zinc-100/10 hover:bg-zinc-200/10"
         )}
       >
         <div className="space-y-3">

@@ -13,8 +13,14 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TestLazyRouteImport = createFileRoute('/test')()
 const StudentLazyRouteImport = createFileRoute('/student')()
 
+const TestLazyRoute = TestLazyRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
 const StudentLazyRoute = StudentLazyRouteImport.update({
   id: '/student',
   path: '/student',
@@ -29,31 +35,42 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/test': typeof TestLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/test': typeof TestLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/test': typeof TestLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/student'
+  fullPaths: '/' | '/student' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/student'
-  id: '__root__' | '/' | '/student'
+  to: '/' | '/student' | '/test'
+  id: '__root__' | '/' | '/student' | '/test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   StudentLazyRoute: typeof StudentLazyRoute
+  TestLazyRoute: typeof TestLazyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/test': {
+      id: '/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof TestLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student': {
       id: '/student'
       path: '/student'
@@ -74,6 +91,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   StudentLazyRoute: StudentLazyRoute,
+  TestLazyRoute: TestLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

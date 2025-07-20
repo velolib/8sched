@@ -7,8 +7,8 @@ import { Code } from 'lucide-react'
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className='container mx-auto flex h-dvh flex-col p-4 px-8'>
-        <div className="mb-4 flex items-center">
+      <div className='container mx-auto flex h-dvh flex-col py-4 px-8'>
+        <div className="mb-4 flex items-center bg-card p-4 border rounded-lg shadow-md">
           <div className="flex flex-col sm:flex-row sm:items-center">
             <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl dark:text-zinc-50">
               8Sched
