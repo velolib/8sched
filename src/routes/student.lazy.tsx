@@ -1,3 +1,4 @@
+import { createLazyFileRoute } from '@tanstack/react-router';
 import { useMemo, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -13,9 +14,9 @@ import type {
   ScheduleRow,
   TeacherRow,
   CombinedScheduleRow,
-} from "./types/schedule";
+} from "../types/schedule";
 import Papa from "papaparse";
-import { ScheduleItem } from "./components/schedule-item";
+import { ScheduleItem } from "../components/schedule-item";
 import { useLocalStorage, useSessionStorage } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -24,9 +25,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Button } from "./components/ui/button";
-import { Toggle } from "./components/ui/toggle";
+import { Button } from "../components/ui/button";
+import { Toggle } from "../components/ui/toggle";
 import { days } from "@/lib/consts";
+
+export const Route = createLazyFileRoute('/student')({
+  component: StudentComponent,
+})
 
 const classes = [
   "X-A",
@@ -61,7 +66,7 @@ const classes = [
   "XII-J",
 ];
 
-export function ScheduleViewer() {
+function StudentComponent() {
   useEffect(() => {
     const storedHash = localStorage.getItem("VITE_GIT_COMMIT_HASH");
     const currentHash = import.meta.env.VITE_GIT_COMMIT_HASH;
@@ -392,3 +397,4 @@ export function ScheduleViewer() {
     </>
   );
 }
+

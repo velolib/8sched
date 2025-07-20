@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import { execSync } from "child_process";
+import { tanstackRouter } from "@tanstack/router-plugin/vite";
 
 // https://vite.dev/config/
 export default defineConfig(() => {
@@ -19,7 +20,10 @@ export default defineConfig(() => {
   process.env.VITE_GIT_COMMIT_HASH = commitHash;
 
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [tanstackRouter({
+      target: "react",
+      autoCodeSplitting: true,
+    }), react(), tailwindcss()],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
