@@ -154,7 +154,7 @@ function RouteComponent() {
         <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {teacherSchedule.map((item, idx) => (
             <TeacherScheduleItem
-              key={`${idx}-${item.period}-${item.code}`}
+              key={`${idx}-${selectedTeacher}-${selectedDay}`}
               row={item}
               index={idx}
               day={selectedDay}
