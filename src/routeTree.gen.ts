@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 
 const TestLazyRouteImport = createFileRoute('/test')()
+const TeacherLazyRouteImport = createFileRoute('/teacher')()
 const StudentLazyRouteImport = createFileRoute('/student')()
 
 const TestLazyRoute = TestLazyRouteImport.update({
@@ -21,6 +22,11 @@ const TestLazyRoute = TestLazyRouteImport.update({
   path: '/test',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
+const TeacherLazyRoute = TeacherLazyRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/teacher.lazy').then((d) => d.Route))
 const StudentLazyRoute = StudentLazyRouteImport.update({
   id: '/student',
   path: '/student',
@@ -35,30 +41,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/teacher': typeof TeacherLazyRoute
   '/test': typeof TestLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/teacher': typeof TeacherLazyRoute
   '/test': typeof TestLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/student': typeof StudentLazyRoute
+  '/teacher': typeof TeacherLazyRoute
   '/test': typeof TestLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/student' | '/test'
+  fullPaths: '/' | '/student' | '/teacher' | '/test'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/student' | '/test'
-  id: '__root__' | '/' | '/student' | '/test'
+  to: '/' | '/student' | '/teacher' | '/test'
+  id: '__root__' | '/' | '/student' | '/teacher' | '/test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   StudentLazyRoute: typeof StudentLazyRoute
+  TeacherLazyRoute: typeof TeacherLazyRoute
   TestLazyRoute: typeof TestLazyRoute
 }
 
@@ -69,6 +79,13 @@ declare module '@tanstack/react-router' {
       path: '/test'
       fullPath: '/test'
       preLoaderRoute: typeof TestLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/teacher': {
+      id: '/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof TeacherLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/student': {
@@ -91,6 +108,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   StudentLazyRoute: StudentLazyRoute,
+  TeacherLazyRoute: TeacherLazyRoute,
   TestLazyRoute: TestLazyRoute,
 }
 export const routeTree = rootRouteImport

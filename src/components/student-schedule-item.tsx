@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Book,
   User,
@@ -11,19 +9,17 @@ import {
   Star,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { cn, formatTeacherName } from "@/lib/utils";
 import { type CSSProperties } from "react";
 import type {
-  CombinedScheduleRow,
-  ScheduleRow,
-  TeacherRow,
+  StudentScheduleRow, TeacherRow
 } from "@/types/schedule";
 import { days } from '@/lib/consts';
+import { getDuration, formatSubject } from "@/lib/utils";
 
 interface ScheduleItemProps {
-  row: CombinedScheduleRow;
+  row: StudentScheduleRow;
   index: number;
-  selectedClass: string;
   teacherData: TeacherRow[];
   compact: boolean;
   day: string;
@@ -133,7 +129,6 @@ const SUBJECT_STYLES = {
   },
 } as const;
 
-const UPPERCASE_SUBJECTS = new Set(["PPKN", "PJOK", "PKWU"]);
 
 const getSubjectStyles = (subject: string | undefined) => {
   if (!subject) subject = "default";
@@ -150,40 +145,16 @@ const getTimeIcon = (time: string) => {
   return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />;
 };
 
-const formatSubject = (subject: string): string => {
-  if (UPPERCASE_SUBJECTS.has(subject.toUpperCase())) {
-    return subject.toUpperCase();
-  }
-  return subject.toLowerCase();
-};
-
-// Helper to calculate duration between two times (HH:mm)
-function getDuration(start: string, end: string): string {
-  const [startH, startM] = start.split(":").map(Number);
-  const [endH, endM] = end.split(":").map(Number);
-  const minutes = (endH * 60 + endM) - (startH * 60 + startM);
-  if (minutes <= 0) return "";
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  let result = "(";
-  if (h > 0) result += `${h} hour${h > 1 ? "s" : ""}`;
-  if (h > 0 && m > 0) result += ", ";
-  if (m > 0) result += `${m} min`;
-  result += ")";
-  return result;
-}
-
-export function ScheduleItem({
+export function StudentScheduleItem({
   row,
   index,
-  selectedClass,
   teacherData,
   compact,
   day,
   currentDate,
 }: ScheduleItemProps) {
   const teacherInfo = teacherData.find(
-    (teacher) => teacher.code === row[selectedClass as keyof ScheduleRow],
+    (teacher) => teacher.code === row.code,
   );
 
   // const currentDate = new Date(2025, 6, 18, 6, 45)
@@ -220,7 +191,7 @@ export function ScheduleItem({
       >
         <div className={cn("absolute inset-0 bg-white/10 opacity-0 transition-opacity", isNow ? "" : "group-hover:opacity-100")} />
         {isRegularClass ? (
-          <div className="flex flex-col items-center text-white">
+          <div className="flex flex-col items-center text-foreground">
             <span className="text-3xl font-bold tracking-tight">
               {row.period}
             </span>
@@ -242,7 +213,6 @@ export function ScheduleItem({
         className={cn(
           "bg-card flex flex-1 p-4 px-6",
           compact ? "items-center" : "flex-col justify-center",
-          isNow ? "" : "transition-colors dark:hover:bg-zinc-100/10 hover:bg-zinc-200/10"
         )}
       >
         <div className="space-y-3">
@@ -250,14 +220,11 @@ export function ScheduleItem({
             <h3 className="font-semibold capitalize">
               {isRegularClass && teacherInfo ? (
                 <div className="flex items-center gap-2">
-                  <Book
-                    className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
-                  />
+                  <Book className={cn("size-5 flex-shrink-0", subjectStyles.text)} />
                   <span
                     className={cn(
-                      "bg-gradient-to-r bg-clip-text",
-                      isNow ? "bg-white" : subjectStyles.gradient,
-                      "text-transparent",
+                      "bg-clip-text text-transparent",
+                      subjectStyles.gradient
                     )}
                   >
                     {formatSubject(teacherInfo.subject)}
@@ -266,23 +233,17 @@ export function ScheduleItem({
               ) : (
                 <div className="flex items-center gap-2">
                   {isRegularClass ? (
-                    <Star
-                      className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
-                    />
+                    <Star className={cn("size-5 flex-shrink-0")} />
                   ) : (
-                    <Coffee
-                      className={cn("size-5 flex-shrink-0", isNow ? "text-white" : subjectStyles.text)}
-                    />
+                    <Coffee className={cn("size-5 flex-shrink-0")} />
                   )}
                   <span
                     className={cn(
-                      "bg-gradient-to-r bg-clip-text capitalize",
-                      "text-transparent",
-                      isNow ? "text-white" :getSubjectStyles(row[selectedClass as keyof ScheduleRow])
-                        .gradient,
+                      "bg-clip-text capitalize text-transparent",
+                      subjectStyles.gradient
                     )}
                   >
-                    {row[selectedClass as keyof ScheduleRow]}
+                    {row.code}
                   </span>
                 </div>
               )}
@@ -291,21 +252,18 @@ export function ScheduleItem({
 
           {!compact && (
             <div className="flex flex-col gap-2 text-sm">
-              <div className="text-muted-foreground/80 flex items-start gap-2">
+              <div className="text-foreground flex items-start gap-2">
                 {getTimeIcon(row.time)}
-                <span className={cn("tabular-nums", isNow ? "text-white" : "text-primary")}>
+                <span className={cn("tabular-nums text-primary")}>
                   {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
                 </span>
               </div>
 
               {isRegularClass && teacherInfo && (
-                <div className="text-muted-foreground/80 flex items-start gap-2">
-                  <User className={cn("mt-0.5 size-4 flex-shrink-0", isNow ? "text-white" : "text-primary/70")} />
-                  <span className={cn("capitalize", isNow ? "text-white" : "text-primary")}>
-                    {teacherInfo.name.split(",")[0].toLowerCase()}
-                    <span className="normal-case">
-                      ,{teacherInfo.name.split(",")[1]}
-                    </span>
+                <div className="text-foreground flex items-start gap-2">
+                  <User className={cn("mt-0.5 size-4 flex-shrink-0 text-foreground")} />
+                  <span className={cn("capitalize text-foreground")}>
+                    {formatTeacherName(teacherInfo.name)}
                   </span>
                 </div>
               )}

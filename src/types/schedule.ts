@@ -39,7 +39,19 @@ export interface TeacherRow {
   subject: string;
 }
 
-export interface CombinedScheduleRow extends ScheduleRow {
+export type StudentScheduleRow = {
+  code: string;
+  time: string;
+  period: string;
+  endTime: string;
+  endPeriod: string;
+}
+
+export interface TeacherScheduleRow {
+  className: string;
+  code: string;
+  time: string;
+  period: string;
   endTime: string;
   endPeriod: string;
 }

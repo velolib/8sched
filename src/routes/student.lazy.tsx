@@ -1,6 +1,5 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
-import { useMemo, useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -10,13 +9,7 @@ import {
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Keyboard, LayoutGrid } from "lucide-react";
-import type {
-  ScheduleRow,
-  TeacherRow,
-  CombinedScheduleRow,
-} from "../types/schedule";
-import Papa from "papaparse";
-import { ScheduleItem } from "../components/schedule-item";
+import { StudentScheduleItem } from "../components/student-schedule-item";
 import { useLocalStorage, useSessionStorage } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -28,6 +21,9 @@ import {
 import { Button } from "../components/ui/button";
 import { Toggle } from "../components/ui/toggle";
 import { days } from "@/lib/consts";
+import { Card } from '@/components/ui/card';
+import { useScheduleData } from "../hooks/useScheduleData";
+import { useStudentSchedule } from '@/hooks/useStudentSchedule';
 
 export const Route = createLazyFileRoute('/student')({
   component: StudentComponent,
@@ -67,6 +63,7 @@ const classes = [
 ];
 
 function StudentComponent() {
+  // Update hash in localStorage if it has changed
   useEffect(() => {
     const storedHash = localStorage.getItem("VITE_GIT_COMMIT_HASH");
     const currentHash = import.meta.env.VITE_GIT_COMMIT_HASH;
@@ -97,6 +94,9 @@ function StudentComponent() {
     "selectedDay",
     days[new Date().getDay() - 1] || "Senin",
   );
+
+  const [currentDate, setCurrentDate] = useState(new Date());
+
   const [compact, setCompact] = useLocalStorage("compact", false);
 
   const handleClassChange = (newClass: string) => {
@@ -107,6 +107,7 @@ function StudentComponent() {
     setSelectedDay(newDay);
   };
 
+  // Handle keyboard shortcuts for day and class selection
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       // Number keys 1-5 for days
@@ -133,153 +134,6 @@ function StudentComponent() {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [setSelectedClass, setSelectedDay, selectedClass]);
 
-  const {
-    data: scheduleData,
-    isLoading: scheduleLoading,
-    error: scheduleError,
-    isSuccess: scheduleSuccess,
-  } = useQuery<ScheduleRow[]>({
-    queryKey: ["scheduleData"],
-    queryFn: async () => {
-      const response = await fetch("/data.csv");
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const text = await response.text();
-      const rows = Papa.parse(text, { delimiter: "," }).data as string[][];
-      return rows.map((row) => ({
-        time: row[0] || "",
-        period: row[1] || "",
-        "X-A": row[2] || "",
-        "X-B": row[3] || "",
-        "X-C": row[4] || "",
-        "X-D": row[5] || "",
-        "X-E": row[6] || "",
-        "X-F": row[7] || "",
-        "X-G": row[8] || "",
-        "X-H": row[9] || "",
-        "X-I": row[10] || "",
-        "X-J": row[11] || "",
-        "XI-A": row[12] || "",
-        "XI-B": row[13] || "",
-        "XI-C": row[14] || "",
-        "XI-D": row[15] || "",
-        "XI-E": row[16] || "",
-        "XI-F": row[17] || "",
-        "XI-G": row[18] || "",
-        "XI-H": row[19] || "",
-        "XI-I": row[20] || "",
-        "XI-J": row[21] || "",
-        "XII-A": row[22] || "",
-        "XII-B": row[23] || "",
-        "XII-C": row[24] || "",
-        "XII-D": row[25] || "",
-        "XII-E": row[26] || "",
-        "XII-F": row[27] || "",
-        "XII-G": row[28] || "",
-        "XII-H": row[29] || "",
-        "XII-I": row[30] || "",
-        "XII-J": row[31] || "",
-      }));
-    },
-  });
-
-  const {
-    data: teacherData,
-    isLoading: teacherLoading,
-    error: teacherError,
-    isSuccess: teacherSuccess,
-  } = useQuery<TeacherRow[]>({
-    queryKey: ["teacherData"],
-    queryFn: async () => {
-      const response = await fetch("/data_guru.csv");
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const text = await response.text();
-      const rows = Papa.parse(text, { delimiter: "," }).data as string[][];
-      return rows.map((row) => ({
-        code: row[0] || "",
-        name: row[1] || "",
-        subject: row[2] || "",
-      }));
-    },
-  });
-
-  // Group schedule by day
-  const combinedSchedule = useMemo(() => {
-    const groupSchedules = (data: ScheduleRow[]) => {
-      const result: ScheduleRow[][] = [];
-      let currentDay: ScheduleRow[] = [];
-
-      data.forEach((item) => {
-        if (item.time === "06:30") {
-          if (currentDay.length > 0) {
-            result.push(currentDay);
-          }
-          currentDay = [];
-        }
-        currentDay.push(item);
-      });
-
-      if (currentDay.length > 0) {
-        result.push(currentDay);
-      }
-
-      return result;
-    };
-
-    if (!scheduleData) return [];
-
-    const combineSchedule = (
-      schedule: ScheduleRow[],
-    ): CombinedScheduleRow[] => {
-      const combined: CombinedScheduleRow[] = [];
-      let current: CombinedScheduleRow | null = null;
-
-      for (let i = 0; i < schedule.length; i++) {
-        const row = schedule[i];
-        const nextRow = i < schedule.length - 1 ? schedule[i + 1] : null;
-
-        if (!row[selectedClass as keyof ScheduleRow]) {
-          continue;
-        }
-
-        if (
-          !current ||
-          row[selectedClass as keyof ScheduleRow] !==
-            current[selectedClass as keyof ScheduleRow] ||
-          !row.period
-        ) {
-          if (current) {
-            combined.push(current);
-          }
-          current = {
-            ...row,
-            endTime: nextRow ? nextRow.time : "Selesai",
-            endPeriod: row.period,
-          };
-        } else {
-          current.endTime = nextRow ? nextRow.time : "Selesai";
-          current.endPeriod = row.period;
-        }
-      }
-
-      if (current) {
-        combined.push(current);
-      }
-
-      return combined;
-    };
-
-    // Filter schedule by selected day
-    const filteredSchedule =
-      groupSchedules(scheduleData)[days.indexOf(selectedDay)];
-
-    return combineSchedule(filteredSchedule);
-  }, [scheduleData, selectedDay, selectedClass]);
-
-  const [currentDate, setCurrentDate] = useState(new Date());
   useEffect(() => {
     const intervalId = setInterval(() => {
       setCurrentDate(new Date());
@@ -292,18 +146,32 @@ function StudentComponent() {
     };
   }, []);
 
-  if (scheduleLoading || teacherLoading)
+  const [scheduleResult, teacherResult] = useScheduleData();
+  const combinedSchedule = useStudentSchedule(
+    scheduleResult.data,
+    selectedDay,
+    selectedClass
+  );
+
+  console.log("Schedule Data:", scheduleResult.data);
+
+  if (scheduleResult.isLoading || teacherResult.isLoading)
     return <div className="p-4 text-center">Loading...</div>;
-  if (scheduleError || !scheduleSuccess || teacherError || !teacherSuccess)
+  if (
+    scheduleResult.error ||
+    !scheduleResult.isSuccess ||
+    teacherResult.error ||
+    !teacherResult.isSuccess
+  )
     return (
       <div className="p-4 text-center text-red-500">
-        Error: {(scheduleError as Error).message}
+        Error: {(scheduleResult.error as Error).message}
       </div>
     );
 
   return (
     <>
-      <div className="mb-2 flex flex-col items-center gap-2 md:mb-4 md:flex-row">
+      <Card className="mb-2 flex flex-col items-center gap-2 md:mb-4 md:flex-row p-4">
         <div className="flex w-full gap-2 md:w-auto">
           <Select onValueChange={handleClassChange} value={selectedClass}>
             <SelectTrigger className="w-full md:w-[120px]">
@@ -374,18 +242,17 @@ function StudentComponent() {
             { month: "long", day: "2-digit", year: "numeric" },
           )}
         </div>
-      </div>
+      </Card>
       <ScrollArea className="flex-1 h-0">
         <div className="grid min-h-0 grow grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {combinedSchedule.map(
             (row, index) =>
               row.period != "Selesai" && (
-                <ScheduleItem
+                <StudentScheduleItem
                   key={`${index}-${selectedClass}-${selectedDay}`}
                   row={row}
                   index={index}
-                  selectedClass={selectedClass}
-                  teacherData={teacherData}
+                  teacherData={teacherResult.data ?? []}
                   compact={compact}
                   day={selectedDay}
                   currentDate={currentDate}
