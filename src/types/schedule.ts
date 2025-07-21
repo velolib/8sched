@@ -45,7 +45,7 @@ export type StudentScheduleRow = {
   period: string;
   endTime: string;
   endPeriod: string;
-}
+};
 
 export interface TeacherScheduleRow {
   className: string;

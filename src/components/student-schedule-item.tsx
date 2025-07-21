@@ -11,10 +11,8 @@ import {
 import { Card } from "@/components/ui/card";
 import { cn, formatTeacherName } from "@/lib/utils";
 import { type CSSProperties } from "react";
-import type {
-  StudentScheduleRow, TeacherRow
-} from "@/types/schedule";
-import { days } from '@/lib/consts';
+import type { StudentScheduleRow, TeacherRow } from "@/types/schedule";
+import { days } from "@/lib/consts";
 import { getDuration, formatSubject } from "@/lib/utils";
 
 interface ScheduleItemProps {
@@ -128,7 +126,6 @@ const SUBJECT_STYLES = {
   },
 } as const;
 
-
 const getSubjectStyles = (subject: string | undefined) => {
   if (!subject) subject = "default";
   const subjectKey = subject.toLowerCase() as keyof typeof SUBJECT_STYLES;
@@ -151,9 +148,7 @@ export function StudentScheduleItem({
   day,
   currentDate,
 }: ScheduleItemProps) {
-  const teacherInfo = teacherData.find(
-    (teacher) => teacher.code === row.code,
-  );
+  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code);
 
   // const currentDate = new Date(2025, 6, 18, 6, 45)
   const isRegularClass = !isNaN(Number.parseInt(row.period));
@@ -169,12 +164,15 @@ export function StudentScheduleItem({
   const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
   const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1];
   const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1];
-  const isNow = currentDayIndex === scheduleDayIndex && currentMinutes >= startMinutes && currentMinutes < endMinutes;
+  const isNow =
+    currentDayIndex === scheduleDayIndex &&
+    currentMinutes >= startMinutes &&
+    currentMinutes < endMinutes;
 
   return (
     <Card
       className={cn(
-        "h-44 sm:h-40 md:h-36 motion-preset-expand motion-duration-400 group overflow-hidden transition-all flex-row py-0 gap-0",
+        "motion-preset-expand motion-duration-400 group h-44 flex-row gap-0 overflow-hidden py-0 transition-all sm:h-40 md:h-36",
         isNow ? subjectStyles.gradient : "bg-card",
       )}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
@@ -186,7 +184,12 @@ export function StudentScheduleItem({
           isNow ? "" : subjectStyles.gradient,
         )}
       >
-        <div className={cn("absolute inset-0 bg-white/10 opacity-0 transition-opacity", isNow ? "" : "group-hover:opacity-100")} />
+        <div
+          className={cn(
+            "absolute inset-0 bg-white/10 opacity-0 transition-opacity",
+            isNow ? "" : "group-hover:opacity-100",
+          )}
+        />
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
             <span className="text-3xl font-bold tracking-tight">
@@ -207,20 +210,20 @@ export function StudentScheduleItem({
 
       {/* Right Side - Content */}
       <div
-        className={cn(
-          "flex-col justify-center bg-card flex flex-1 p-4 px-6",
-        )}
+        className={cn("bg-card flex flex-1 flex-col justify-center p-4 px-6")}
       >
         <div className="space-y-3">
           <div>
             <h3 className="font-semibold capitalize">
               {isRegularClass && teacherInfo ? (
                 <div className="flex items-center gap-2">
-                  <Book className={cn("size-5 flex-shrink-0", subjectStyles.text)} />
+                  <Book
+                    className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                  />
                   <span
                     className={cn(
                       "bg-clip-text text-transparent",
-                      subjectStyles.gradient
+                      subjectStyles.gradient,
                     )}
                   >
                     {formatSubject(teacherInfo.subject)}
@@ -235,8 +238,8 @@ export function StudentScheduleItem({
                   )}
                   <span
                     className={cn(
-                      "bg-clip-text capitalize text-transparent",
-                      subjectStyles.gradient
+                      "bg-clip-text text-transparent capitalize",
+                      subjectStyles.gradient,
                     )}
                   >
                     {row.code}
@@ -249,15 +252,17 @@ export function StudentScheduleItem({
           <div className="flex flex-col gap-2 text-sm">
             <div className="text-foreground flex items-start gap-2">
               {getTimeIcon(row.time)}
-              <span className={cn("tabular-nums text-primary")}>
+              <span className={cn("text-primary tabular-nums")}>
                 {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
               </span>
             </div>
 
             {isRegularClass && teacherInfo && (
               <div className="text-foreground flex items-start gap-2">
-                <User className={cn("mt-0.5 size-4 flex-shrink-0 text-foreground")} />
-                <span className={cn("capitalize text-foreground")}>
+                <User
+                  className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")}
+                />
+                <span className={cn("text-foreground capitalize")}>
                   {formatTeacherName(teacherInfo.name)}
                 </span>
               </div>

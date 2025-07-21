@@ -9,11 +9,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Popover,
   PopoverContent,
@@ -53,11 +49,18 @@ export function ComboBoxResponsive({
   const trigger = (
     <Button
       variant="outline"
-      className={(className || "w-full md:w-[240px]") + " justify-start text-left overflow-hidden"}
+      className={
+        (className || "w-full md:w-[240px]") +
+        " justify-start overflow-hidden text-left"
+      }
       type="button"
     >
-      <span className="block truncate w-full text-left">
-        {selected ? selected.label : <span className="text-muted-foreground">{placeholder}</span>}
+      <span className="block w-full truncate text-left">
+        {selected ? (
+          selected.label
+        ) : (
+          <span className="text-muted-foreground">{placeholder}</span>
+        )}
       </span>
     </Button>
   );
@@ -119,7 +122,7 @@ export function ComboBoxResponsive({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        <div className="my-4 w-[260px] mx-auto">{mobileList}</div>
+        <div className="mx-auto my-4 w-[260px]">{mobileList}</div>
       </DrawerContent>
     </Drawer>
   );

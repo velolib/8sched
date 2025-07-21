@@ -1,16 +1,16 @@
-import { ModeToggle } from '@/components/mode-toggle'
-import { Button } from '@/components/ui/button'
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-import { BookOpenText, Code, School } from 'lucide-react'
-import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
-import { Menu } from 'lucide-react'
+import { ModeToggle } from "@/components/mode-toggle";
+import { Button } from "@/components/ui/button";
+import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { BookOpenText, Code, School } from "lucide-react";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Menu } from "lucide-react";
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className='container mx-auto flex h-dvh flex-col py-4 px-4'>
-        <div className="mb-2 md:mb-4 flex items-center bg-card p-4 border rounded-lg shadow-sm">
+      <div className="container mx-auto flex h-dvh flex-col px-4 py-4">
+        <div className="bg-card mb-2 flex items-center rounded-lg border p-4 shadow-sm md:mb-4">
           <div className="flex flex-col sm:flex-row sm:items-center">
             <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl dark:text-zinc-50">
               8Sched
@@ -28,7 +28,7 @@ export const Route = createRootRoute({
             </span>
           </div>
           {/* Mobile navigation: Drawer */}
-          <div className="flex ml-auto gap-2 md:hidden">
+          <div className="ml-auto flex gap-2 md:hidden">
             <Drawer>
               <DrawerTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -37,7 +37,7 @@ export const Route = createRootRoute({
                 </Button>
               </DrawerTrigger>
               <DrawerContent className="p-4">
-                <div className="flex flex-col gap-2 mt-4">
+                <div className="mt-4 flex flex-col gap-2">
                   <Button variant="outline" asChild>
                     <Link to="/student">
                       <BookOpenText className="size-4.5" />
@@ -64,29 +64,20 @@ export const Route = createRootRoute({
               </DrawerContent>
             </Drawer>
           </div>
-          <div className="hidden ml-auto gap-2 md:flex">
-            <Button
-              variant={"outline"}
-              asChild
-            >
+          <div className="ml-auto hidden gap-2 md:flex">
+            <Button variant={"outline"} asChild>
               <Link to="/student">
                 <BookOpenText className="size-4.5" />
                 <span>Student</span>
               </Link>
             </Button>
-            <Button
-              variant={"outline"}
-              asChild
-            >
+            <Button variant={"outline"} asChild>
               <Link to="/teacher">
                 <School className="size-4.5" />
                 <span>Teacher</span>
               </Link>
             </Button>
-            <Button
-              variant={"outline"}
-              asChild
-            >
+            <Button variant={"outline"} asChild>
               <a
                 href="https://github.com/velolib/8sched"
                 target="_blank"
@@ -104,4 +95,4 @@ export const Route = createRootRoute({
       <TanStackRouterDevtools />
     </>
   ),
-})
+});

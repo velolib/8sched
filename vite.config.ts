@@ -20,10 +20,14 @@ export default defineConfig(() => {
   process.env.VITE_GIT_COMMIT_HASH = commitHash;
 
   return {
-    plugins: [tanstackRouter({
-      target: "react",
-      autoCodeSplitting: true,
-    }), react(), tailwindcss()],
+    plugins: [
+      tanstackRouter({
+        target: "react",
+        autoCodeSplitting: true,
+      }),
+      react(),
+      tailwindcss(),
+    ],
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),

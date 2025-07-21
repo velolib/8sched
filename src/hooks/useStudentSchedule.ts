@@ -5,7 +5,7 @@ import { days } from "@/lib/consts";
 export function useStudentSchedule(
   scheduleData: ScheduleRow[] | undefined,
   selectedDay: string,
-  selectedClass: string
+  selectedClass: string,
 ): StudentScheduleRow[] {
   return useMemo(() => {
     if (!scheduleData) return [];
@@ -24,7 +24,7 @@ export function useStudentSchedule(
 
     // Check if the selected day exists in the schedule (MONDAY-FRIDAY)
     const todayRows = daysSchedules[days.indexOf(selectedDay)] ?? [];
-  
+
     // Combine schedule rows that are the same subject
     const combined: StudentScheduleRow[] = [];
     let block: StudentScheduleRow | null = null;
@@ -34,11 +34,7 @@ export function useStudentSchedule(
       const nextRow = todayRows[i + 1];
       const subject = row[selectedClass as keyof ScheduleRow];
       if (!subject) continue;
-      if (
-        !block ||
-        subject !== block.code ||
-        !row.period
-      ) {
+      if (!block || subject !== block.code || !row.period) {
         if (block) combined.push(block);
         block = {
           time: row.time,

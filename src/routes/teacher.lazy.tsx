@@ -1,51 +1,62 @@
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { useScheduleData } from '@/hooks/useScheduleData'
-import { useTeacherSchedule } from '@/hooks/useTeacherSchedule'
-import { days } from '@/lib/consts'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
-import { createLazyFileRoute } from '@tanstack/react-router'
-import { Keyboard } from 'lucide-react'
-import { useState, useMemo, useEffect } from 'react'
-import { formatTeacherName } from '@/lib/utils'
-import type { ScheduleRow, TeacherRow } from '@/types/schedule'
-import { TeacherScheduleItem } from '@/components/teacher-schedule-item'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { ComboBoxResponsive } from '@/components/ui/combo-box-responsive'
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useScheduleData } from "@/hooks/useScheduleData";
+import { useTeacherSchedule } from "@/hooks/useTeacherSchedule";
+import { days } from "@/lib/consts";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { createLazyFileRoute } from "@tanstack/react-router";
+import { Keyboard } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { formatTeacherName } from "@/lib/utils";
+import type { ScheduleRow, TeacherRow } from "@/types/schedule";
+import { TeacherScheduleItem } from "@/components/teacher-schedule-item";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ComboBoxResponsive } from "@/components/ui/combo-box-responsive";
 
-export const Route = createLazyFileRoute('/teacher')({
+export const Route = createLazyFileRoute("/teacher")({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const [scheduleResult, teacherResult] = useScheduleData()
+  const [scheduleResult, teacherResult] = useScheduleData();
   // Build mapping from teacher name to array of codes
   const teacherMap: Record<string, string[]> = useMemo(() => {
-    const map: Record<string, string[]> = {}
-    const teacherData = teacherResult?.data as TeacherRow[] | undefined
+    const map: Record<string, string[]> = {};
+    const teacherData = teacherResult?.data as TeacherRow[] | undefined;
     teacherData?.forEach((t: TeacherRow) => {
-      if (!map[t.name]) map[t.name] = []
-      map[t.name].push(t.code)
-    })
-    return map
-  }, [teacherResult])
+      if (!map[t.name]) map[t.name] = [];
+      map[t.name].push(t.code);
+    });
+    return map;
+  }, [teacherResult]);
 
   // Get unique teacher names
-  const teachers = Object.keys(teacherMap)
-  const [selectedTeacher, setSelectedTeacher] = useState<string>(teachers[0] || '')
-  const [selectedDay, setSelectedDay] = useState(days[0])
+  const teachers = Object.keys(teacherMap);
+  const [selectedTeacher, setSelectedTeacher] = useState<string>(
+    teachers[0] || "",
+  );
+  const [selectedDay, setSelectedDay] = useState(days[0]);
 
   function handleTeacherChange(value: string) {
-    setSelectedTeacher(value)
+    setSelectedTeacher(value);
   }
   function handleDayChange(value: string) {
-    setSelectedDay(value)
+    setSelectedDay(value);
   }
 
-  const teacherSchedule = useTeacherSchedule(scheduleResult?.data as ScheduleRow[] | undefined, selectedDay, teacherMap[selectedTeacher] || [])
+  const teacherSchedule = useTeacherSchedule(
+    scheduleResult?.data as ScheduleRow[] | undefined,
+    selectedDay,
+    teacherMap[selectedTeacher] || [],
+  );
 
-  console.log(teacherSchedule)
+  console.log(teacherSchedule);
 
   // Keyboard shortcuts: 1-5 for days, arrows for cycling
   useEffect(() => {
@@ -70,7 +81,8 @@ function RouteComponent() {
       const teacherIndex = teachers.indexOf(selectedTeacher);
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        const prevIndex = (teacherIndex - 1 + teachers.length) % teachers.length;
+        const prevIndex =
+          (teacherIndex - 1 + teachers.length) % teachers.length;
         setSelectedTeacher(teachers[prevIndex]);
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
@@ -84,10 +96,13 @@ function RouteComponent() {
 
   return (
     <>
-      <Card className="mb-2 flex flex-col items-center gap-2 md:mb-4 md:flex-row p-4">
+      <Card className="mb-2 flex flex-col items-center gap-2 p-4 md:mb-4 md:flex-row">
         <div className="flex w-full gap-2 md:w-auto">
           <ComboBoxResponsive
-            options={teachers.map((t) => ({ value: t, label: formatTeacherName(t) }))}
+            options={teachers.map((t) => ({
+              value: t,
+              label: formatTeacherName(t),
+            }))}
             value={selectedTeacher}
             onChange={handleTeacherChange}
             placeholder="Select a teacher"
@@ -128,27 +143,27 @@ function RouteComponent() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className="text-xs text-nowrap text-zinc-900 dark:text-zinc-50 text-center">
+        <div className="text-center text-xs text-nowrap text-zinc-900 dark:text-zinc-50">
           {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString(
             "en-GB",
             { month: "long", day: "2-digit", year: "numeric" },
           )}
         </div>
       </Card>
-      <ScrollArea className="flex-1 h-0">
-        <div className='grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3'>
+      <ScrollArea className="h-0 flex-1">
+        <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {teacherSchedule.map((item, idx) => (
             <TeacherScheduleItem
               key={idx}
               row={item}
               index={idx}
               day={selectedDay}
-              teacherData={teacherResult.data as TeacherRow[] || []}
+              teacherData={(teacherResult.data as TeacherRow[]) || []}
               currentDate={new Date()}
             />
           ))}
         </div>
       </ScrollArea>
     </>
-  )
+  );
 }

@@ -1,11 +1,11 @@
-import { useMemo } from "react"
-import type { ScheduleRow, TeacherScheduleRow } from "@/types/schedule"
-import { days } from "@/lib/consts"
+import { useMemo } from "react";
+import type { ScheduleRow, TeacherScheduleRow } from "@/types/schedule";
+import { days } from "@/lib/consts";
 
 export function useTeacherSchedule(
   scheduleData: ScheduleRow[] | undefined,
   selectedDay: string,
-  teacherCodes: string[]
+  teacherCodes: string[],
 ) {
   return useMemo(() => {
     if (!scheduleData || !teacherCodes.length) return [];
@@ -27,8 +27,12 @@ export function useTeacherSchedule(
 
     // For each period, check if the teacher is teaching, otherwise mark as gap
     const teacherBlocks = todayRows.map((row) => {
-      const match = Object.entries(row)
-        .find(([key, value]) => key !== "time" && key !== "period" && teacherCodes.includes(value as string));
+      const match = Object.entries(row).find(
+        ([key, value]) =>
+          key !== "time" &&
+          key !== "period" &&
+          teacherCodes.includes(value as string),
+      );
       if (match) {
         const [className, code] = match;
         return { ...row, className, code };
@@ -49,14 +53,15 @@ export function useTeacherSchedule(
         curr.code !== block.code ||
         curr.className !== block.className
       ) {
-        if (block) combined.push({
+        if (block)
+          combined.push({
             endTime: block.endTime,
             endPeriod: block.endPeriod,
             className: block.className,
             code: block.code,
             time: block.time,
             period: block.period,
-        });
+          });
         block = {
           className: curr.className,
           code: curr.code,
@@ -78,5 +83,5 @@ export function useTeacherSchedule(
 
     // No need to prune Istirahat blocks, return all
     return combined as TeacherScheduleRow[];
-  }, [scheduleData, selectedDay, teacherCodes])
+  }, [scheduleData, selectedDay, teacherCodes]);
 }
