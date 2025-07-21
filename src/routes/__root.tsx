@@ -3,12 +3,14 @@ import { Button } from '@/components/ui/button'
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 import { BookOpenText, Code, School } from 'lucide-react'
+import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
+import { Menu } from 'lucide-react'
 
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div className='container mx-auto flex h-dvh flex-col py-4 px-8'>
-        <div className="mb-4 flex items-center bg-card p-4 border rounded-lg shadow-sm">
+      <div className='container mx-auto flex h-dvh flex-col py-4 px-4'>
+        <div className="mb-2 md:mb-4 flex items-center bg-card p-4 border rounded-lg shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center">
             <h1 className="text-xl font-bold text-zinc-900 sm:text-2xl dark:text-zinc-50">
               8Sched
@@ -25,52 +27,76 @@ export const Route = createRootRoute({
               </a>
             </span>
           </div>
-          <div className="flex ml-auto gap-2">
+          {/* Mobile navigation: Drawer */}
+          <div className="flex ml-auto gap-2 md:hidden">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Menu className="size-5" />
+                  <span className="sr-only">Open navigation</span>
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent className="p-4">
+                <div className="flex flex-col gap-2 mt-4">
+                  <Button variant="outline" asChild>
+                    <Link to="/student">
+                      <BookOpenText className="size-4.5" />
+                      <span>Student</span>
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <Link to="/teacher">
+                      <School className="size-4.5" />
+                      <span>Teacher</span>
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild>
+                    <a
+                      href="https://github.com/velolib/8sched"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Code className="size-4.5" />
+                      <span>Source Code</span>
+                    </a>
+                  </Button>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+          <div className="hidden ml-auto gap-2 md:flex">
             <Button
               variant={"outline"}
-              className="ml-auto hidden md:flex"
               asChild
             >
               <Link to="/student">
-                <BookOpenText className="size-4" />
+                <BookOpenText className="size-4.5" />
                 <span>Student</span>
               </Link>
             </Button>
             <Button
               variant={"outline"}
-              className="hidden md:flex"
               asChild
             >
               <Link to="/teacher">
-                <School className="size-4" />
+                <School className="size-4.5" />
                 <span>Teacher</span>
               </Link>
             </Button>
-            <Button variant={"outline"} className="hidden md:flex" asChild>
+            <Button
+              variant={"outline"}
+              asChild
+            >
               <a
                 href="https://github.com/velolib/8sched"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Code className="size-4" />
+                <Code className="size-4.5" />
                 <span>Source Code</span>
               </a>
             </Button>
           </div>
-          <Button
-            variant={"outline"}
-            className="ml-auto flex items-center justify-center md:hidden"
-            size="icon"
-          >
-            <a
-              href="https://github.com/velolib/8sched"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center"
-            >
-              <Code className="size-4" />
-            </a>
-          </Button>
           <ModeToggle className="ml-2" />
         </div>
         <Outlet />

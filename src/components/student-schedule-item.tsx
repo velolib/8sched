@@ -21,7 +21,6 @@ interface ScheduleItemProps {
   row: StudentScheduleRow;
   index: number;
   teacherData: TeacherRow[];
-  compact: boolean;
   day: string;
   currentDate: Date;
 }
@@ -149,7 +148,6 @@ export function StudentScheduleItem({
   row,
   index,
   teacherData,
-  compact,
   day,
   currentDate,
 }: ScheduleItemProps) {
@@ -176,8 +174,7 @@ export function StudentScheduleItem({
   return (
     <Card
       className={cn(
-        "motion-preset-expand motion-duration-400 group overflow-hidden transition-all flex-row py-0 gap-0",
-        compact ? "h-24" : "h-44 sm:h-40 md:h-36",
+        "h-44 sm:h-40 md:h-36 motion-preset-expand motion-duration-400 group overflow-hidden transition-all flex-row py-0 gap-0",
         isNow ? subjectStyles.gradient : "bg-card",
       )}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
@@ -191,7 +188,7 @@ export function StudentScheduleItem({
       >
         <div className={cn("absolute inset-0 bg-white/10 opacity-0 transition-opacity", isNow ? "" : "group-hover:opacity-100")} />
         {isRegularClass ? (
-          <div className="flex flex-col items-center text-foreground">
+          <div className="flex flex-col items-center text-white">
             <span className="text-3xl font-bold tracking-tight">
               {row.period}
             </span>
@@ -211,8 +208,7 @@ export function StudentScheduleItem({
       {/* Right Side - Content */}
       <div
         className={cn(
-          "bg-card flex flex-1 p-4 px-6",
-          compact ? "items-center" : "flex-col justify-center",
+          "flex-col justify-center bg-card flex flex-1 p-4 px-6",
         )}
       >
         <div className="space-y-3">
@@ -250,25 +246,23 @@ export function StudentScheduleItem({
             </h3>
           </div>
 
-          {!compact && (
-            <div className="flex flex-col gap-2 text-sm">
+          <div className="flex flex-col gap-2 text-sm">
+            <div className="text-foreground flex items-start gap-2">
+              {getTimeIcon(row.time)}
+              <span className={cn("tabular-nums text-primary")}>
+                {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
+              </span>
+            </div>
+
+            {isRegularClass && teacherInfo && (
               <div className="text-foreground flex items-start gap-2">
-                {getTimeIcon(row.time)}
-                <span className={cn("tabular-nums text-primary")}>
-                  {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
+                <User className={cn("mt-0.5 size-4 flex-shrink-0 text-foreground")} />
+                <span className={cn("capitalize text-foreground")}>
+                  {formatTeacherName(teacherInfo.name)}
                 </span>
               </div>
-
-              {isRegularClass && teacherInfo && (
-                <div className="text-foreground flex items-start gap-2">
-                  <User className={cn("mt-0.5 size-4 flex-shrink-0 text-foreground")} />
-                  <span className={cn("capitalize text-foreground")}>
-                    {formatTeacherName(teacherInfo.name)}
-                  </span>
-                </div>
-              )}
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </Card>

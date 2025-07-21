@@ -33,12 +33,12 @@ export function useTeacherSchedule(
         const [className, code] = match;
         return { ...row, className, code };
       } else {
-        // Gap: teacher not teaching this period
-        return { ...row, className: null, code: null };
+        // Gap: teacher not teaching this period, fill with Istirahat
+        return { ...row, className: "Istirahat", code: "ISTIRAHAT" };
       }
     });
 
-    // Combine consecutive periods with the same code and class (including gaps)
+    // Combine consecutive periods with the same code and class (including Istirahat)
     const combined = [];
     let block = null;
     for (let i = 0; i < teacherBlocks.length; i++) {
@@ -71,7 +71,12 @@ export function useTeacherSchedule(
       }
     }
     if (block) combined.push(block);
-    // Prune empty (gap) blocks
-    return combined.filter(b => b.code && b.className) as TeacherScheduleRow[];
+
+    if (combined[combined.length - 1].time === "15:00") {
+      combined.pop(); // Remove last block if it ends at 15:00, crude!
+    }
+
+    // No need to prune Istirahat blocks, return all
+    return combined as TeacherScheduleRow[];
   }, [scheduleData, selectedDay, teacherCodes])
 }

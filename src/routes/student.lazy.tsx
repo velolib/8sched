@@ -1,14 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Keyboard, LayoutGrid } from "lucide-react";
+import { Keyboard } from "lucide-react";
 import { StudentScheduleItem } from "../components/student-schedule-item";
 import { useLocalStorage, useSessionStorage } from "@uidotdev/usehooks";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,11 +12,11 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "../components/ui/button";
-import { Toggle } from "../components/ui/toggle";
 import { days } from "@/lib/consts";
 import { Card } from '@/components/ui/card';
 import { useScheduleData } from "../hooks/useScheduleData";
 import { useStudentSchedule } from '@/hooks/useStudentSchedule';
+import { ComboBoxResponsive } from '@/components/ui/combo-box-responsive';
 
 export const Route = createLazyFileRoute('/student')({
   component: StudentComponent,
@@ -97,8 +90,6 @@ function StudentComponent() {
 
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const [compact, setCompact] = useLocalStorage("compact", false);
-
   const handleClassChange = (newClass: string) => {
     setSelectedClass(newClass);
   };
@@ -117,22 +108,30 @@ function StudentComponent() {
           setSelectedDay(days[index]);
         }
       }
-
-      // Arrow keys for classes
+      // ArrowLeft/ArrowRight to cycle days
+      const dayIndex = days.indexOf(selectedDay);
+      if (e.key === "ArrowLeft") {
+        const prevIndex = (dayIndex - 1 + days.length) % days.length;
+        setSelectedDay(days[prevIndex]);
+      } else if (e.key === "ArrowRight") {
+        const nextIndex = (dayIndex + 1) % days.length;
+        setSelectedDay(days[nextIndex]);
+      }
+      // ArrowUp/ArrowDown to cycle classes (ComboBox)
       const classIndex = classes.indexOf(selectedClass);
       if (e.key === "ArrowUp") {
+        e.preventDefault();
+        const prevIndex = (classIndex - 1 + classes.length) % classes.length;
+        setSelectedClass(classes[prevIndex]);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
         const nextIndex = (classIndex + 1) % classes.length;
         setSelectedClass(classes[nextIndex]);
-      } else if (e.key === "ArrowDown") {
-        const prevIndex =
-          (classIndex - 1 + classes.length) % classes.length;
-        setSelectedClass(classes[prevIndex]);
       }
     };
-
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [setSelectedClass, setSelectedDay, selectedClass]);
+  }, [selectedClass, selectedDay]);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -153,52 +152,17 @@ function StudentComponent() {
     selectedClass
   );
 
-  console.log("Schedule Data:", scheduleResult.data);
-
-  if (scheduleResult.isLoading || teacherResult.isLoading)
-    return <div className="p-4 text-center">Loading...</div>;
-  if (
-    scheduleResult.error ||
-    !scheduleResult.isSuccess ||
-    teacherResult.error ||
-    !teacherResult.isSuccess
-  )
-    return (
-      <div className="p-4 text-center text-red-500">
-        Error: {(scheduleResult.error as Error).message}
-      </div>
-    );
-
   return (
     <>
       <Card className="mb-2 flex flex-col items-center gap-2 md:mb-4 md:flex-row p-4">
         <div className="flex w-full gap-2 md:w-auto">
-          <Select onValueChange={handleClassChange} value={selectedClass}>
-            <SelectTrigger className="w-full md:w-[120px]">
-              <SelectValue placeholder="Select a class" />
-            </SelectTrigger>
-            <SelectContent>
-              <div className="grid grid-cols-2 gap-2 p-2">
-                {classes.map((cls) => (
-                  <SelectItem
-                    key={cls}
-                    value={cls}
-                    className="flex items-center justify-center rounded-md p-2 pr-8"
-                  >
-                    {cls}
-                  </SelectItem>
-                ))}
-              </div>
-            </SelectContent>
-          </Select>
-          <Toggle
-            aria-label="Toggle compact"
-            pressed={compact}
-            onPressedChange={setCompact}
-            variant="outline"
-          >
-            <LayoutGrid className="size-4 text-zinc-900 dark:text-zinc-50" />
-          </Toggle>
+          <ComboBoxResponsive
+            options={classes.map((cls) => ({ value: cls, label: cls }))}
+            value={selectedClass}
+            onChange={handleClassChange}
+            placeholder="Select a class"
+            className="w-full md:w-[120px]"
+          />
         </div>
 
         <Tabs
@@ -235,16 +199,15 @@ function StudentComponent() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className="text-xs text-nowrap text-zinc-900 dark:text-zinc-50">
-          Last updated:{" "}
+        <div className="text-xs text-nowrap text-zinc-900 dark:text-zinc-50 text-center">
           {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString(
             "en-GB",
-            { month: "long", day: "2-digit", year: "numeric" },
+            { month: "long", day: "2-digit", year: "numeric" }
           )}
         </div>
       </Card>
       <ScrollArea className="flex-1 h-0">
-        <div className="grid min-h-0 grow grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
+        <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {combinedSchedule.map(
             (row, index) =>
               row.period != "Selesai" && (
@@ -253,7 +216,6 @@ function StudentComponent() {
                   row={row}
                   index={index}
                   teacherData={teacherResult.data ?? []}
-                  compact={compact}
                   day={selectedDay}
                   currentDate={currentDate}
                 />
