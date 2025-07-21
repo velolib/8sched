@@ -27,8 +27,33 @@ export const Route = createRootRoute({
               </a>
             </span>
           </div>
+          <div className="ml-auto hidden gap-2 md:flex">
+            <Button variant={"outline"} asChild>
+              <Link to="/student">
+                <BookOpenText className="size-4.5" />
+                <span>Student</span>
+              </Link>
+            </Button>
+            <Button variant={"outline"} asChild>
+              <Link to="/teacher">
+                <School className="size-4.5" />
+                <span>Teacher</span>
+              </Link>
+            </Button>
+            <Button variant={"outline"} asChild>
+              <a
+                href="https://github.com/velolib/8sched"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Code className="size-4.5" />
+                <span>Source Code</span>
+              </a>
+            </Button>
+          </div>
+          <ModeToggle className="ml-auto md:ml-2" />
           {/* Mobile navigation: Drawer */}
-          <div className="ml-auto flex gap-2 md:hidden">
+          <div className="ml-2 flex gap-2 md:hidden">
             <Drawer>
               <DrawerTrigger asChild>
                 <Button variant="outline" size="icon">
@@ -64,31 +89,6 @@ export const Route = createRootRoute({
               </DrawerContent>
             </Drawer>
           </div>
-          <div className="ml-auto hidden gap-2 md:flex">
-            <Button variant={"outline"} asChild>
-              <Link to="/student">
-                <BookOpenText className="size-4.5" />
-                <span>Student</span>
-              </Link>
-            </Button>
-            <Button variant={"outline"} asChild>
-              <Link to="/teacher">
-                <School className="size-4.5" />
-                <span>Teacher</span>
-              </Link>
-            </Button>
-            <Button variant={"outline"} asChild>
-              <a
-                href="https://github.com/velolib/8sched"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Code className="size-4.5" />
-                <span>Source Code</span>
-              </a>
-            </Button>
-          </div>
-          <ModeToggle className="ml-2" />
         </div>
         <Outlet />
       </div>
