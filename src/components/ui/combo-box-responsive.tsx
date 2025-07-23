@@ -88,7 +88,7 @@ export function ComboBoxResponsive({
   const mobileList = (
     <Command>
       <CommandInput placeholder={placeholder} />
-      <ScrollArea className="max-h-60">
+      <ScrollArea className="h-full">
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup>
