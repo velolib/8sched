@@ -150,7 +150,7 @@ function RouteComponent() {
           )}
         </div>
       </Card>
-      <ScrollArea className="h-0 flex-1">
+      <ScrollArea className="flex-1">
         <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
           {teacherSchedule.map((item, idx) => (
             <TeacherScheduleItem

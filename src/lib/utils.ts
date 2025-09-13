@@ -28,9 +28,9 @@ export function getDuration(start: string, end: string): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   let result = "(";
-  if (h > 0) result += `${h} hour${h > 1 ? "s" : ""}`;
-  if (h > 0 && m > 0) result += ", ";
-  if (m > 0) result += `${m} min`;
+  if (h > 0) result += `${h}h`;
+  if (h > 0 && m > 0) result += " ";
+  if (m > 0) result += `${m}m`;
   result += ")";
   return result;
 }

@@ -204,8 +204,7 @@ export function TeacherScheduleItem({
   return (
     <Card
       className={cn(
-        "motion-preset-expand motion-duration-400 group h-44 flex-row gap-0 overflow-hidden py-0 transition-all sm:h-40 md:h-36",
-        isNow && className ? classStyles.gradient : "bg-card",
+        "motion-preset-expand motion-duration-400 group h-48 flex-row gap-0 divide-x overflow-hidden py-0 transition-all sm:h-42 md:h-36",
       )}
       style={{ "--motion-delay": `${index * 50}ms` } as CSSProperties}
     >
@@ -213,13 +212,12 @@ export function TeacherScheduleItem({
       <div
         className={cn(
           "group relative flex w-24 flex-col items-center justify-center overflow-hidden p-4 text-center",
-          isNow ? "" : classStyles.gradient,
+          classStyles.gradient,
         )}
       >
         <div
           className={cn(
             "absolute inset-0 bg-white/10 opacity-0 transition-opacity",
-            isNow ? "" : "group-hover:opacity-100",
           )}
         />
         {isIstirahat ? (
@@ -239,68 +237,53 @@ export function TeacherScheduleItem({
         ) : (
           <Coffee className="size-8 flex-shrink-0 text-white" />
         )}
+        {isNow && (
+          <span className="bg-destructive mt-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium text-white">
+            <span className="h-2 w-2 animate-pulse rounded-full bg-white/50" />
+            Now
+          </span>
+        )}
       </div>
 
       {/* Right Side - Content */}
       <div
-        className={cn(
-          "bg-card flex flex-1 flex-col justify-center p-4 px-6",
-          isNow
-            ? ""
-            : "transition-colors hover:bg-zinc-200/10 dark:hover:bg-zinc-100/10",
-        )}
+        className={cn("bg-card flex flex-1 flex-col justify-center p-4 px-6")}
       >
         <div className="space-y-3">
           <div>
             <h3 className="font-semibold capitalize">
-              {isIstirahat ? (
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 w-0">
+                {isIstirahat ? (
                   <Coffee
                     className={cn("size-5 flex-shrink-0", classStyles.text)}
                   />
-                  <span
-                    className={cn(
-                      "bg-clip-text text-transparent",
-                      classStyles.gradient,
-                    )}
-                  >
-                    Istirahat
-                  </span>
-                </div>
-              ) : isRegularClass && className ? (
-                <div className="flex items-center gap-2">
+                ) : isRegularClass && className ? (
                   <School
                     className={cn("size-5 flex-shrink-0", classStyles.text)}
                   />
-                  <span
-                    className={cn(
-                      "bg-clip-text text-transparent",
-                      classStyles.gradient,
-                    )}
-                  >
-                    {className}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
+                ) : (
                   <Coffee className={cn("size-5 flex-shrink-0")} />
-                  <span
-                    className={cn(
-                      "bg-clip-text text-transparent capitalize",
-                      classStyles.gradient,
-                    )}
-                  >
-                    {className || "-"}
-                  </span>
-                </div>
-              )}
+                )}
+                <span
+                  className={cn(
+                    "bg-clip-text text-transparent capitalize",
+                    classStyles.gradient,
+                  )}
+                >
+                  {isIstirahat
+                    ? "Istirahat"
+                    : isRegularClass && className
+                      ? className
+                      : className || "-"}
+                </span>
+              </div>
             </h3>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">
             <div className="text-muted-foreground flex items-start gap-2">
               {getTimeIcon(row.time)}
-              <span className={cn("text-primary tabular-nums")}>
+              <span className={cn("text-foreground tabular-nums")}>
                 {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
               </span>
             </div>
