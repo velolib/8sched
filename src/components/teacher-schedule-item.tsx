@@ -1,16 +1,24 @@
-import { Card } from "@/components/ui/card"
-import { cn, formatSubject, getDuration } from "@/lib/utils"
-import { Book, Coffee, ArrowRight, Sunrise, Sun, Moon, School } from "lucide-react"
-import type { CSSProperties } from "react"
-import type { TeacherRow, TeacherScheduleRow } from "@/types/schedule"
-import { days } from "@/lib/consts"
+import { Card } from "@/components/ui/card";
+import { cn, formatSubject, getDuration } from "@/lib/utils";
+import {
+  Book,
+  Coffee,
+  ArrowRight,
+  Sunrise,
+  Sun,
+  Moon,
+  School,
+} from "lucide-react";
+import type { CSSProperties } from "react";
+import type { TeacherRow, TeacherScheduleRow } from "@/types/schedule";
+import { days } from "@/lib/consts";
 
 interface TeacherScheduleItemProps {
-  row: TeacherScheduleRow
-  index: number
-  teacherData: TeacherRow[]
-  day: string
-  currentDate: Date
+  row: TeacherScheduleRow;
+  index: number;
+  teacherData: TeacherRow[];
+  day: string;
+  currentDate: Date;
 }
 
 // Hardcoded class styles for all 30 classes (X-A to XII-J)
@@ -148,37 +156,50 @@ const CLASS_STYLES = {
     gradient: "bg-gradient-to-br from-zinc-400 to-gray-500",
     text: "text-zinc-400",
   },
-} as const
+} as const;
 
 function getClassGradient(className: string | undefined) {
-  if (!className) return CLASS_STYLES.default
-  return CLASS_STYLES[className as keyof typeof CLASS_STYLES] || CLASS_STYLES.default
+  if (!className) return CLASS_STYLES.default;
+  return (
+    CLASS_STYLES[className as keyof typeof CLASS_STYLES] || CLASS_STYLES.default
+  );
 }
 
 const getTimeIcon = (time: string) => {
-  const hour = Number.parseInt(time.split(":")[0])
-  if (hour < 10) return <Sunrise className="mt-0.5 size-4 flex-shrink-0 text-orange-400" />
-  if (hour < 15) return <Sun className="mt-0.5 size-4 flex-shrink-0 text-yellow-400" />
-  return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />
-}
+  const hour = Number.parseInt(time.split(":")[0]);
+  if (hour < 10)
+    return <Sunrise className="mt-0.5 size-4 flex-shrink-0 text-orange-400" />;
+  if (hour < 15)
+    return <Sun className="mt-0.5 size-4 flex-shrink-0 text-yellow-400" />;
+  return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />;
+};
 
-export function TeacherScheduleItem({ row, index, day, currentDate, teacherData }: TeacherScheduleItemProps) {
+export function TeacherScheduleItem({
+  row,
+  index,
+  day,
+  currentDate,
+  teacherData,
+}: TeacherScheduleItemProps) {
   // Find the class this teacher is teaching in this row
-  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code)
-  const className = row.className
-  const isRegularClass = !isNaN(Number.parseInt(row.period))
-  const parsedStartTime = row.time.split(":").map(Number)
-  const parsedEndTime = row.endTime.split(":").map(Number)
-  let currentDayIndex = currentDate.getDay() - 1
-  if (currentDate.getDay() === -1) currentDayIndex = 6
-  const scheduleDayIndex = days.indexOf(day)
-  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes()
-  const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1]
-  const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1]
-  const isNow = currentDayIndex === scheduleDayIndex && currentMinutes >= startMinutes && currentMinutes < endMinutes
+  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code);
+  const className = row.className;
+  const isRegularClass = !isNaN(Number.parseInt(row.period));
+  const parsedStartTime = row.time.split(":").map(Number);
+  const parsedEndTime = row.endTime.split(":").map(Number);
+  let currentDayIndex = currentDate.getDay() - 1;
+  if (currentDate.getDay() === -1) currentDayIndex = 6;
+  const scheduleDayIndex = days.indexOf(day);
+  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+  const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1];
+  const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1];
+  const isNow =
+    currentDayIndex === scheduleDayIndex &&
+    currentMinutes >= startMinutes &&
+    currentMinutes < endMinutes;
 
-  const classStyles = getClassGradient(className)
-  const isIstirahat = className === "Istirahat" || row.code === "ISTIRAHAT"
+  const classStyles = getClassGradient(className);
+  const isIstirahat = className === "Istirahat" || row.code === "ISTIRAHAT";
 
   return (
     <Card
@@ -198,7 +219,9 @@ export function TeacherScheduleItem({ row, index, day, currentDate, teacherData 
           <Coffee className="size-8 flex-shrink-0" />
         ) : isRegularClass ? (
           <div className="flex flex-col items-center">
-            <span className="text-3xl font-bold tracking-tight">{row.period}</span>
+            <span className="text-3xl font-bold tracking-tight">
+              {row.period}
+            </span>
             {row.endPeriod !== row.period && (
               <div className="mt-1 flex items-center gap-px text-sm">
                 <ArrowRight className="size-3 flex-shrink-0" />
@@ -218,20 +241,37 @@ export function TeacherScheduleItem({ row, index, day, currentDate, teacherData 
       </div>
 
       {/* Right Side - Content */}
-      <div className={cn("bg-card flex flex-1 min-w-0 flex-col justify-center p-4 px-6")}>
+      <div
+        className={cn(
+          "bg-card flex min-w-0 flex-1 flex-col justify-center p-4 px-6",
+        )}
+      >
         <div className="space-y-3">
           <div>
             <h3 className="font-semibold capitalize">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex min-w-0 items-center gap-2">
                 {isIstirahat ? (
-                  <Coffee className={cn("size-5 flex-shrink-0", classStyles.text)} />
+                  <Coffee
+                    className={cn("size-5 flex-shrink-0", classStyles.text)}
+                  />
                 ) : isRegularClass && className ? (
-                  <School className={cn("size-5 flex-shrink-0", classStyles.text)} />
+                  <School
+                    className={cn("size-5 flex-shrink-0", classStyles.text)}
+                  />
                 ) : (
                   <Coffee className={cn("size-5 flex-shrink-0")} />
                 )}
-                <span className={cn("bg-clip-text text-transparent capitalize text-pretty", classStyles.gradient)}>
-                  {isIstirahat ? "Istirahat" : isRegularClass && className ? className : className || "-"}
+                <span
+                  className={cn(
+                    "bg-clip-text text-pretty text-transparent capitalize",
+                    classStyles.gradient,
+                  )}
+                >
+                  {isIstirahat
+                    ? "Istirahat"
+                    : isRegularClass && className
+                      ? className
+                      : className || "-"}
                 </span>
               </div>
             </h3>
@@ -240,14 +280,16 @@ export function TeacherScheduleItem({ row, index, day, currentDate, teacherData 
           <div className="flex flex-col gap-2 text-sm">
             <div className="text-muted-foreground flex items-start gap-2">
               {getTimeIcon(row.time)}
-              <span className={cn("text-foreground tabular-nums text-pretty")}>
+              <span className={cn("text-foreground text-pretty tabular-nums")}>
                 {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
               </span>
             </div>
             {!isIstirahat && (
               <div className="text-muted-foreground flex items-start gap-2">
-                <Book className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")} />
-                <span className={cn("text-foreground capitalize text-pretty")}>
+                <Book
+                  className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")}
+                />
+                <span className={cn("text-foreground text-pretty capitalize")}>
                   {teacherInfo ? formatSubject(teacherInfo.subject) : "Unknown"}
                 </span>
               </div>
@@ -256,5 +298,5 @@ export function TeacherScheduleItem({ row, index, day, currentDate, teacherData 
         </div>
       </div>
     </Card>
-  )
+  );
 }

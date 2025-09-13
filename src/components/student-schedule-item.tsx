@@ -1,17 +1,26 @@
-import { Book, User, Coffee, Moon, Sun, Sunrise, ArrowRight, Star } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { cn, formatTeacherName } from "@/lib/utils"
-import type { CSSProperties } from "react"
-import type { StudentScheduleRow, TeacherRow } from "@/types/schedule"
-import { days } from "@/lib/consts"
-import { getDuration, formatSubject } from "@/lib/utils"
+import {
+  Book,
+  User,
+  Coffee,
+  Moon,
+  Sun,
+  Sunrise,
+  ArrowRight,
+  Star,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { cn, formatTeacherName } from "@/lib/utils";
+import type { CSSProperties } from "react";
+import type { StudentScheduleRow, TeacherRow } from "@/types/schedule";
+import { days } from "@/lib/consts";
+import { getDuration, formatSubject } from "@/lib/utils";
 
 interface ScheduleItemProps {
-  row: StudentScheduleRow
-  index: number
-  teacherData: TeacherRow[]
-  day: string
-  currentDate: Date
+  row: StudentScheduleRow;
+  index: number;
+  teacherData: TeacherRow[];
+  day: string;
+  currentDate: Date;
 }
 
 // Combined subject styling configuration
@@ -115,39 +124,50 @@ const SUBJECT_STYLES = {
     gradient: "bg-gradient-to-br from-zinc-400 to-gray-500",
     text: "text-zinc-400",
   },
-} as const
+} as const;
 
 const getSubjectStyles = (subject: string | undefined) => {
-  if (!subject) subject = "default"
-  const subjectKey = subject.toLowerCase() as keyof typeof SUBJECT_STYLES
-  return SUBJECT_STYLES[subjectKey] || SUBJECT_STYLES.default
-}
+  if (!subject) subject = "default";
+  const subjectKey = subject.toLowerCase() as keyof typeof SUBJECT_STYLES;
+  return SUBJECT_STYLES[subjectKey] || SUBJECT_STYLES.default;
+};
 
 const getTimeIcon = (time: string) => {
-  const hour = Number.parseInt(time.split(":")[0])
-  if (hour < 10) return <Sunrise className="mt-0.5 size-4 flex-shrink-0 text-orange-400" />
-  if (hour < 15) return <Sun className="mt-0.5 size-4 flex-shrink-0 text-yellow-400" />
-  return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />
-}
+  const hour = Number.parseInt(time.split(":")[0]);
+  if (hour < 10)
+    return <Sunrise className="mt-0.5 size-4 flex-shrink-0 text-orange-400" />;
+  if (hour < 15)
+    return <Sun className="mt-0.5 size-4 flex-shrink-0 text-yellow-400" />;
+  return <Moon className="mt-0.5 size-4 flex-shrink-0 text-blue-400" />;
+};
 
-export function StudentScheduleItem({ row, index, teacherData, day, currentDate }: ScheduleItemProps) {
-  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code)
+export function StudentScheduleItem({
+  row,
+  index,
+  teacherData,
+  day,
+  currentDate,
+}: ScheduleItemProps) {
+  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code);
 
   // const currentDate = new Date(2025, 6, 18, 6, 45)
-  const isRegularClass = !isNaN(Number.parseInt(row.period))
-  const subjectStyles = getSubjectStyles(teacherInfo?.subject)
+  const isRegularClass = !isNaN(Number.parseInt(row.period));
+  const subjectStyles = getSubjectStyles(teacherInfo?.subject);
 
-  const parsedStartTime = row.time.split(":").map(Number)
-  const parsedEndTime = row.endTime.split(":").map(Number)
+  const parsedStartTime = row.time.split(":").map(Number);
+  const parsedEndTime = row.endTime.split(":").map(Number);
 
   // Improved isNow algorithm
-  let currentDayIndex = currentDate.getDay() - 1
-  if (currentDate.getDay() === -1) currentDayIndex = 6
-  const scheduleDayIndex = days.indexOf(day)
-  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes()
-  const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1]
-  const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1]
-  const isNow = currentDayIndex === scheduleDayIndex && currentMinutes >= startMinutes && currentMinutes < endMinutes
+  let currentDayIndex = currentDate.getDay() - 1;
+  if (currentDate.getDay() === -1) currentDayIndex = 6;
+  const scheduleDayIndex = days.indexOf(day);
+  const currentMinutes = currentDate.getHours() * 60 + currentDate.getMinutes();
+  const startMinutes = parsedStartTime[0] * 60 + parsedStartTime[1];
+  const endMinutes = parsedEndTime[0] * 60 + parsedEndTime[1];
+  const isNow =
+    currentDayIndex === scheduleDayIndex &&
+    currentMinutes >= startMinutes &&
+    currentMinutes < endMinutes;
 
   // isNow = startMinutes % 2 === 0;
 
@@ -167,7 +187,9 @@ export function StudentScheduleItem({ row, index, teacherData, day, currentDate 
       >
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
-            <span className="text-3xl font-bold tracking-tight">{row.period}</span>
+            <span className="text-3xl font-bold tracking-tight">
+              {row.period}
+            </span>
             {row.endPeriod !== row.period && (
               <div className="mt-1 flex items-center gap-px text-sm">
                 {/* <div className="h-3 w-[1px] bg-white/60 rotate-12" /> */}
@@ -188,13 +210,19 @@ export function StudentScheduleItem({ row, index, teacherData, day, currentDate 
       </div>
 
       {/* Right Side - Content */}
-      <div className={cn("bg-card flex flex-1 overflow-visible min-w-0 flex-col justify-center p-4 px-6")}>
+      <div
+        className={cn(
+          "bg-card flex min-w-0 flex-1 flex-col justify-center overflow-visible p-4 px-6",
+        )}
+      >
         <div className="space-y-3">
           <div>
             <h3 className="font-semibold capitalize">
               <div className="flex items-center gap-2">
                 {isRegularClass && teacherInfo ? (
-                  <Book className={cn("size-5 flex-shrink-0", subjectStyles.text)} />
+                  <Book
+                    className={cn("size-5 flex-shrink-0", subjectStyles.text)}
+                  />
                 ) : isRegularClass ? (
                   <Star className={cn("size-5 flex-shrink-0")} />
                 ) : (
@@ -202,12 +230,14 @@ export function StudentScheduleItem({ row, index, teacherData, day, currentDate 
                 )}
                 <span
                   className={cn(
-                    "bg-clip-text text-transparent text-pretty min-w-0",
+                    "min-w-0 bg-clip-text text-pretty text-transparent",
                     subjectStyles.gradient,
                     !(isRegularClass && teacherInfo) && "capitalize",
                   )}
                 >
-                  {isRegularClass && teacherInfo ? formatSubject(teacherInfo.subject) : row.code}
+                  {isRegularClass && teacherInfo
+                    ? formatSubject(teacherInfo.subject)
+                    : row.code}
                 </span>
               </div>
             </h3>
@@ -223,8 +253,14 @@ export function StudentScheduleItem({ row, index, teacherData, day, currentDate 
 
             {isRegularClass && teacherInfo && (
               <div className="text-foreground flex items-start gap-2">
-                <User className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")} />
-                <span className={cn("text-foreground capitalize text-pretty min-w-0")}>
+                <User
+                  className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")}
+                />
+                <span
+                  className={cn(
+                    "text-foreground min-w-0 text-pretty capitalize",
+                  )}
+                >
                   {formatTeacherName(teacherInfo.name)}
                 </span>
               </div>
@@ -233,5 +269,5 @@ export function StudentScheduleItem({ row, index, teacherData, day, currentDate 
         </div>
       </div>
     </Card>
-  )
+  );
 }
