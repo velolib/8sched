@@ -39,4 +39,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           packageManager: bun
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: pages deploy ./dist --project-name=8sched --branch production
+          command: pages deploy ./dist --project-name=8sched --branch main
