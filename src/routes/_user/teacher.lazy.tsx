@@ -186,12 +186,12 @@ function RouteComponent() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <div className="text-center text-xs text-nowrap text-zinc-900 dark:text-zinc-50">
-          {/* {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString(
+        {/* <div className="text-center text-xs text-nowrap text-zinc-900 dark:text-zinc-50">
+          {new Date(import.meta.env.VITE_GIT_COMMIT_DATE).toLocaleDateString(
             "en-GB",
             { month: "long", day: "2-digit", year: "numeric" },
-          )} */}
-        </div>
+          )}
+        </div> */}
       </Card>
       <ScrollArea className="flex-1">
         <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
