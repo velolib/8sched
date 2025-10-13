@@ -3,6 +3,11 @@ name = "8sched"
 compatibility_date = "2025-02-14"
 pages_build_output_dir = "dist"
 
+[[d1_databases]]
+database_id = "b3c192e0-ef54-4e64-996c-7e48989b004f"
+binding = "DB"
+database_name = "8sched-data"
+
 [[env.production.d1_databases]]
 database_id = "b3c192e0-ef54-4e64-996c-7e48989b004f"
 binding = "DB"
