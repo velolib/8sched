@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { createLazyFileRoute } from "@tanstack/react-router";
 
-export const Route = createLazyFileRoute("/test")({
+export const Route = createLazyFileRoute("/_user/test")({
   component: RouteComponent,
 });
 

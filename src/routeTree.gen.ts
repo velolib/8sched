@@ -11,105 +11,261 @@
 import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteRouteImport } from './routes/admin/route'
+import { Route as UserRouteRouteImport } from './routes/_user/route'
+import { Route as UserIndexRouteImport } from './routes/_user/index'
+import { Route as UserLoginRouteImport } from './routes/_user/login'
 
-const TestLazyRouteImport = createFileRoute('/test')()
-const TeacherLazyRouteImport = createFileRoute('/teacher')()
-const StudentLazyRouteImport = createFileRoute('/student')()
+const AdminIndexLazyRouteImport = createFileRoute('/admin/')()
+const AdminTeachersLazyRouteImport = createFileRoute('/admin/teachers')()
+const AdminSchedulesLazyRouteImport = createFileRoute('/admin/schedules')()
+const UserTestLazyRouteImport = createFileRoute('/_user/test')()
+const UserTeacherLazyRouteImport = createFileRoute('/_user/teacher')()
+const UserStudentLazyRouteImport = createFileRoute('/_user/student')()
 
-const TestLazyRoute = TestLazyRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/test.lazy').then((d) => d.Route))
-const TeacherLazyRoute = TeacherLazyRouteImport.update({
-  id: '/teacher',
-  path: '/teacher',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/teacher.lazy').then((d) => d.Route))
-const StudentLazyRoute = StudentLazyRouteImport.update({
-  id: '/student',
-  path: '/student',
-  getParentRoute: () => rootRouteImport,
-} as any).lazy(() => import('./routes/student.lazy').then((d) => d.Route))
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AdminRouteRoute = AdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UserRouteRoute = UserRouteRouteImport.update({
+  id: '/_user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexLazyRoute = AdminIndexLazyRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRouteRoute,
+} as any).lazy(() => import('./routes/admin/index.lazy').then((d) => d.Route))
+const UserIndexRoute = UserIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => UserRouteRoute,
+} as any)
+const AdminTeachersLazyRoute = AdminTeachersLazyRouteImport.update({
+  id: '/teachers',
+  path: '/teachers',
+  getParentRoute: () => AdminRouteRoute,
+} as any).lazy(() =>
+  import('./routes/admin/teachers.lazy').then((d) => d.Route),
+)
+const AdminSchedulesLazyRoute = AdminSchedulesLazyRouteImport.update({
+  id: '/schedules',
+  path: '/schedules',
+  getParentRoute: () => AdminRouteRoute,
+} as any).lazy(() =>
+  import('./routes/admin/schedules.lazy').then((d) => d.Route),
+)
+const UserTestLazyRoute = UserTestLazyRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => UserRouteRoute,
+} as any).lazy(() => import('./routes/_user/test.lazy').then((d) => d.Route))
+const UserTeacherLazyRoute = UserTeacherLazyRouteImport.update({
+  id: '/teacher',
+  path: '/teacher',
+  getParentRoute: () => UserRouteRoute,
+} as any).lazy(() => import('./routes/_user/teacher.lazy').then((d) => d.Route))
+const UserStudentLazyRoute = UserStudentLazyRouteImport.update({
+  id: '/student',
+  path: '/student',
+  getParentRoute: () => UserRouteRoute,
+} as any).lazy(() => import('./routes/_user/student.lazy').then((d) => d.Route))
+const UserLoginRoute = UserLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => UserRouteRoute,
+} as any).lazy(() => import('./routes/_user/login.lazy').then((d) => d.Route))
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/student': typeof StudentLazyRoute
-  '/teacher': typeof TeacherLazyRoute
-  '/test': typeof TestLazyRoute
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/login': typeof UserLoginRoute
+  '/student': typeof UserStudentLazyRoute
+  '/teacher': typeof UserTeacherLazyRoute
+  '/test': typeof UserTestLazyRoute
+  '/admin/schedules': typeof AdminSchedulesLazyRoute
+  '/admin/teachers': typeof AdminTeachersLazyRoute
+  '/': typeof UserIndexRoute
+  '/admin/': typeof AdminIndexLazyRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/student': typeof StudentLazyRoute
-  '/teacher': typeof TeacherLazyRoute
-  '/test': typeof TestLazyRoute
+  '/login': typeof UserLoginRoute
+  '/student': typeof UserStudentLazyRoute
+  '/teacher': typeof UserTeacherLazyRoute
+  '/test': typeof UserTestLazyRoute
+  '/admin/schedules': typeof AdminSchedulesLazyRoute
+  '/admin/teachers': typeof AdminTeachersLazyRoute
+  '/': typeof UserIndexRoute
+  '/admin': typeof AdminIndexLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/student': typeof StudentLazyRoute
-  '/teacher': typeof TeacherLazyRoute
-  '/test': typeof TestLazyRoute
+  '/_user': typeof UserRouteRouteWithChildren
+  '/admin': typeof AdminRouteRouteWithChildren
+  '/_user/login': typeof UserLoginRoute
+  '/_user/student': typeof UserStudentLazyRoute
+  '/_user/teacher': typeof UserTeacherLazyRoute
+  '/_user/test': typeof UserTestLazyRoute
+  '/admin/schedules': typeof AdminSchedulesLazyRoute
+  '/admin/teachers': typeof AdminTeachersLazyRoute
+  '/_user/': typeof UserIndexRoute
+  '/admin/': typeof AdminIndexLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/student' | '/teacher' | '/test'
+  fullPaths:
+    | '/admin'
+    | '/login'
+    | '/student'
+    | '/teacher'
+    | '/test'
+    | '/admin/schedules'
+    | '/admin/teachers'
+    | '/'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/student' | '/teacher' | '/test'
-  id: '__root__' | '/' | '/student' | '/teacher' | '/test'
+  to:
+    | '/login'
+    | '/student'
+    | '/teacher'
+    | '/test'
+    | '/admin/schedules'
+    | '/admin/teachers'
+    | '/'
+    | '/admin'
+  id:
+    | '__root__'
+    | '/_user'
+    | '/admin'
+    | '/_user/login'
+    | '/_user/student'
+    | '/_user/teacher'
+    | '/_user/test'
+    | '/admin/schedules'
+    | '/admin/teachers'
+    | '/_user/'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  StudentLazyRoute: typeof StudentLazyRoute
-  TeacherLazyRoute: typeof TeacherLazyRoute
-  TestLazyRoute: typeof TestLazyRoute
+  UserRouteRoute: typeof UserRouteRouteWithChildren
+  AdminRouteRoute: typeof AdminRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestLazyRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/teacher': {
-      id: '/teacher'
-      path: '/teacher'
-      fullPath: '/teacher'
-      preLoaderRoute: typeof TeacherLazyRouteImport
+    '/_user': {
+      id: '/_user'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof UserRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student': {
-      id: '/student'
-      path: '/student'
-      fullPath: '/student'
-      preLoaderRoute: typeof StudentLazyRouteImport
-      parentRoute: typeof rootRouteImport
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexLazyRouteImport
+      parentRoute: typeof AdminRouteRoute
     }
-    '/': {
-      id: '/'
+    '/_user/': {
+      id: '/_user/'
       path: '/'
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof UserIndexRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/admin/teachers': {
+      id: '/admin/teachers'
+      path: '/teachers'
+      fullPath: '/admin/teachers'
+      preLoaderRoute: typeof AdminTeachersLazyRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/admin/schedules': {
+      id: '/admin/schedules'
+      path: '/schedules'
+      fullPath: '/admin/schedules'
+      preLoaderRoute: typeof AdminSchedulesLazyRouteImport
+      parentRoute: typeof AdminRouteRoute
+    }
+    '/_user/test': {
+      id: '/_user/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof UserTestLazyRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/teacher': {
+      id: '/_user/teacher'
+      path: '/teacher'
+      fullPath: '/teacher'
+      preLoaderRoute: typeof UserTeacherLazyRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/student': {
+      id: '/_user/student'
+      path: '/student'
+      fullPath: '/student'
+      preLoaderRoute: typeof UserStudentLazyRouteImport
+      parentRoute: typeof UserRouteRoute
+    }
+    '/_user/login': {
+      id: '/_user/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof UserLoginRouteImport
+      parentRoute: typeof UserRouteRoute
     }
   }
 }
 
+interface UserRouteRouteChildren {
+  UserLoginRoute: typeof UserLoginRoute
+  UserStudentLazyRoute: typeof UserStudentLazyRoute
+  UserTeacherLazyRoute: typeof UserTeacherLazyRoute
+  UserTestLazyRoute: typeof UserTestLazyRoute
+  UserIndexRoute: typeof UserIndexRoute
+}
+
+const UserRouteRouteChildren: UserRouteRouteChildren = {
+  UserLoginRoute: UserLoginRoute,
+  UserStudentLazyRoute: UserStudentLazyRoute,
+  UserTeacherLazyRoute: UserTeacherLazyRoute,
+  UserTestLazyRoute: UserTestLazyRoute,
+  UserIndexRoute: UserIndexRoute,
+}
+
+const UserRouteRouteWithChildren = UserRouteRoute._addFileChildren(
+  UserRouteRouteChildren,
+)
+
+interface AdminRouteRouteChildren {
+  AdminSchedulesLazyRoute: typeof AdminSchedulesLazyRoute
+  AdminTeachersLazyRoute: typeof AdminTeachersLazyRoute
+  AdminIndexLazyRoute: typeof AdminIndexLazyRoute
+}
+
+const AdminRouteRouteChildren: AdminRouteRouteChildren = {
+  AdminSchedulesLazyRoute: AdminSchedulesLazyRoute,
+  AdminTeachersLazyRoute: AdminTeachersLazyRoute,
+  AdminIndexLazyRoute: AdminIndexLazyRoute,
+}
+
+const AdminRouteRouteWithChildren = AdminRouteRoute._addFileChildren(
+  AdminRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  StudentLazyRoute: StudentLazyRoute,
-  TeacherLazyRoute: TeacherLazyRoute,
-  TestLazyRoute: TestLazyRoute,
+  UserRouteRoute: UserRouteRouteWithChildren,
+  AdminRouteRoute: AdminRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

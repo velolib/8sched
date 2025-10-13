@@ -20,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export interface ComboBoxOption {
   value: string;
   label: string;
+  filterValue?: string;
 }
 
 interface ComboBoxResponsiveProps {
@@ -74,7 +75,7 @@ export function ComboBoxResponsive({
           {options.map((option) => (
             <CommandItem
               key={option.value}
-              value={option.value}
+              value={option.filterValue ?? `${option.label} ${option.value}`}
               onSelect={() => handleSelect(option.value)}
             >
               {option.label}
@@ -95,7 +96,7 @@ export function ComboBoxResponsive({
             {options.map((option) => (
               <CommandItem
                 key={option.value}
-                value={option.value}
+                value={option.filterValue ?? `${option.label} ${option.value}`}
                 onSelect={() => handleSelect(option.value)}
               >
                 {option.label}

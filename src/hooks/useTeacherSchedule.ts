@@ -1,87 +1,107 @@
 import { useMemo } from "react";
-import type { ScheduleRow, TeacherScheduleRow } from "@/types/schedule";
-import { days } from "@/lib/consts";
+import type { Schedule, Teacher, TeacherScheduleBlock } from "@/types/schedule";
 
 export function useTeacherSchedule(
-  scheduleData: ScheduleRow[] | undefined,
-  selectedDay: string,
-  teacherCodes: string[],
-) {
+  schedules: Schedule[] | undefined,
+  teachers: Teacher[] | undefined,
+  dayFilter: number,
+  teacherNameFilter: string,
+): TeacherScheduleBlock[] {
   return useMemo(() => {
-    if (!scheduleData || !teacherCodes.length) return [];
-
-    // Split schedule data into days
-    const daysSchedules = [];
-    let currentDayRows: ScheduleRow[] = [];
-    for (const row of scheduleData) {
-      if (row.time === "06:30" && currentDayRows.length) {
-        daysSchedules.push(currentDayRows);
-        currentDayRows = [];
-      }
-      currentDayRows.push(row);
+    if (!schedules?.length || !teachers?.length || !teacherNameFilter) {
+      return [];
     }
-    if (currentDayRows.length) daysSchedules.push(currentDayRows);
 
-    // Check if the selected day exists in the schedule (MONDAY-FRIDAY)
-    const todayRows = daysSchedules[days.indexOf(selectedDay)] ?? [];
+    const currentTeachers = teachers.filter(
+      (t) => t.name === teacherNameFilter,
+    );
+    if (!currentTeachers.length) {
+      return [];
+    }
 
-    // For each period, check if the teacher is teaching, otherwise mark as gap
-    const teacherBlocks = todayRows.map((row) => {
-      const match = Object.entries(row).find(
-        ([key, value]) =>
-          key !== "time" &&
-          key !== "period" &&
-          teacherCodes.includes(value as string),
+    const daySchedules = schedules.filter((s) => s.day === dayFilter);
+    const uniqueTimes = Array.from(
+      new Set(daySchedules.map((s) => s.time_slot)),
+    ).sort((a, b) => a.localeCompare(b));
+
+    if (!uniqueTimes.length) {
+      return [];
+    }
+
+    const timelineSlots = uniqueTimes.map((time) => {
+      const classesInSlot = daySchedules.filter(
+        (s) =>
+          s.time_slot === time &&
+          currentTeachers.some((ct) => ct.code === s.teacher_code),
       );
-      if (match) {
-        const [className, code] = match;
-        return { ...row, className, code };
+
+      if (classesInSlot.length === 0) {
+        // If no class, it's a break/free period.
+        return { class_name: "Istirahat", teacher_code: null };
       } else {
-        // Gap: teacher not teaching this period, fill with Istirahat
-        return { ...row, className: "Istirahat", code: "ISTIRAHAT" };
+        // If there are classes (including conflicts), join their names.
+        // For simplicity, we'll just take the first class's info for the block.
+        // The grouping logic will handle separating different subjects.
+        return {
+          class_name: classesInSlot.map((c) => c.class_name).join(" / "),
+          teacher_code: classesInSlot[0].teacher_code, // Use the code to differentiate subjects
+        };
       }
     });
 
-    // Combine consecutive periods with the same code and class (including Istirahat)
-    const combined = [];
-    let block = null;
-    for (let i = 0; i < teacherBlocks.length; i++) {
-      const curr = teacherBlocks[i];
-      const next = teacherBlocks[i + 1];
+    if (timelineSlots.length === 0) {
+      return [];
+    }
+
+    const blocks: (Omit<TeacherScheduleBlock, "teacher" | "day"> & {
+      teacher_code: string | null;
+    })[] = [];
+    let currentBlock: Omit<TeacherScheduleBlock, "teacher" | "day"> & {
+      teacher_code: string | null;
+    } = {
+      class_name: timelineSlots[0].class_name,
+      start_time: uniqueTimes[0],
+      end_time: "", // Will be set later
+      teacher_code: timelineSlots[0].teacher_code,
+    };
+
+    for (let i = 1; i < timelineSlots.length; i++) {
       if (
-        !block ||
-        curr.code !== block.code ||
-        curr.className !== block.className
+        timelineSlots[i].class_name === currentBlock.class_name &&
+        timelineSlots[i].teacher_code === currentBlock.teacher_code
       ) {
-        if (block)
-          combined.push({
-            endTime: block.endTime,
-            endPeriod: block.endPeriod,
-            className: block.className,
-            code: block.code,
-            time: block.time,
-            period: block.period,
-          });
-        block = {
-          className: curr.className,
-          code: curr.code,
-          time: curr.time,
-          period: curr.period,
-          endTime: next ? next.time : "15:00",
-          endPeriod: curr.period,
-        };
+        // If the class and subject are the same as the previous one, extend the current block.
+        // No action needed, we just continue.
       } else {
-        block.endTime = next ? next.time : "15:00";
-        block.endPeriod = curr.period;
+        // If the class or subject changes, the previous block is complete.
+        // The end time is the start of the *next* slot.
+        currentBlock.end_time = uniqueTimes[i];
+        blocks.push(currentBlock);
+
+        // Start a new block.
+        currentBlock = {
+          class_name: timelineSlots[i].class_name,
+          start_time: uniqueTimes[i],
+          end_time: "",
+          teacher_code: timelineSlots[i].teacher_code,
+        };
       }
     }
-    if (block) combined.push(block);
 
-    if (combined[combined.length - 1].time === "15:00") {
-      combined.pop(); // Remove last block if it ends at 15:00, crude!
-    }
+    currentBlock.end_time = "Selesai";
+    blocks.push(currentBlock);
 
-    // No need to prune Istirahat blocks, return all
-    return combined as TeacherScheduleRow[];
-  }, [scheduleData, selectedDay, teacherCodes]);
+    return blocks.map((block) => {
+      const teacherForBlock =
+        currentTeachers.find((t) => t.code === block.teacher_code) ||
+        currentTeachers[0];
+      return {
+        class_name: block.class_name,
+        start_time: block.start_time,
+        end_time: block.end_time,
+        teacher: teacherForBlock,
+        day: dayFilter,
+      };
+    });
+  }, [schedules, teachers, dayFilter, teacherNameFilter]);
 }

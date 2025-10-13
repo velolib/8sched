@@ -1,0 +1,20 @@
+DROP TABLE IF EXISTS Schedules;
+DROP TABLE IF EXISTS Teachers;
+
+CREATE TABLE IF NOT EXISTS Teachers (
+  id INTEGER PRIMARY KEY,
+  code TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  subject TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Schedules (
+  id INTEGER PRIMARY KEY,
+  time_slot TEXT NOT NULL,
+  class_name TEXT NOT NULL,
+  teacher_code TEXT,
+  day INTEGER NOT NULL,
+  FOREIGN KEY (teacher_code) REFERENCES Teachers(code) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+

@@ -32,10 +32,12 @@ jobs:
           NODE_ENV: production
 
       - name: Publish
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          workingDirectory: ./
+          environment: production
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: 8sched
-          directory: dist
+          packageManager: bun
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy ./dist --project-name=8sched

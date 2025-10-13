@@ -1,56 +1,77 @@
 import { useMemo } from "react";
-import type { ScheduleRow, StudentScheduleRow } from "../types/schedule";
-import { days } from "@/lib/consts";
+import { checkIfReservedCode } from "@/lib/utils";
+import { Schedule, Teacher, StudentScheduleBlock } from "@/types/schedule";
 
 export function useStudentSchedule(
-  scheduleData: ScheduleRow[] | undefined,
-  selectedDay: string,
-  selectedClass: string,
-): StudentScheduleRow[] {
+  schedules: Schedule[] | undefined,
+  teachers: Teacher[] | undefined,
+  dayFilter: number,
+  classFilter: string,
+): StudentScheduleBlock[] {
   return useMemo(() => {
-    if (!scheduleData) return [];
+    if (!schedules?.length || !teachers?.length) return [];
 
-    // Split schedule data into days
-    const daysSchedules = [];
-    let currentDayRows: ScheduleRow[] = [];
-    for (const row of scheduleData) {
-      if (row.time === "06:30" && currentDayRows.length) {
-        daysSchedules.push(currentDayRows);
-        currentDayRows = [];
+    const classSchedules = schedules
+      .filter((row) => row.class_name === classFilter && row.day === dayFilter)
+      .sort((a, b) => a.time_slot.localeCompare(b.time_slot));
+
+    // Precompute non-reserved 1-indexed positions
+    const nonReservedPositions: number[] = [];
+    let counter = 0;
+    for (let i = 0; i < classSchedules.length; i++) {
+      const row = classSchedules[i];
+      const isReserved = checkIfReservedCode(row.teacher_code);
+      if (isReserved) {
+        nonReservedPositions[i] = -1;
+      } else {
+        counter += 1;
+        nonReservedPositions[i] = counter;
       }
-      currentDayRows.push(row);
     }
-    if (currentDayRows.length) daysSchedules.push(currentDayRows);
 
-    // Check if the selected day exists in the schedule (MONDAY-FRIDAY)
-    const todayRows = daysSchedules[days.indexOf(selectedDay)] ?? [];
+    const getTeacher = (code: string): Teacher | undefined =>
+      teachers.find((t) => t.code === code);
 
-    // Combine schedule rows that are the same subject
-    const combined: StudentScheduleRow[] = [];
-    let block: StudentScheduleRow | null = null;
+    const blocks: StudentScheduleBlock[] = [];
+    let block: StudentScheduleBlock | null = null;
 
-    for (let i = 0; i < todayRows.length; i++) {
-      const row = todayRows[i];
-      const nextRow = todayRows[i + 1];
-      const subject = row[selectedClass as keyof ScheduleRow];
-      if (!subject) continue;
-      if (!block || subject !== block.code || !row.period) {
-        if (block) combined.push(block);
+    for (let i = 0; i < classSchedules.length; i++) {
+      const current = classSchedules[i];
+      const next = classSchedules[i + 1];
+      if (!current.teacher_code) continue;
+
+      const teacher = getTeacher(current.teacher_code);
+      const isReserved = checkIfReservedCode(current.teacher_code);
+      const pos = nonReservedPositions[i];
+
+      // Start new block when teacher changes
+      if (!block || block.teacher.code !== current.teacher_code) {
+        if (block) blocks.push(block);
+
         block = {
-          time: row.time,
-          period: row.period,
-          code: subject as string,
-          endTime: nextRow ? nextRow.time : "Selesai",
-          endPeriod: row.period,
+          teacher_code: current.teacher_code,
+          teacher: teacher ?? {
+            id: -1,
+            code: current.teacher_code,
+            name: "Unknown",
+            subject: isReserved ? "Reserved" : "Unknown",
+          },
+          start_time: current.time_slot,
+          end_time: next ? next.time_slot : "Selesai",
+          start_index: isReserved ? -1 : pos,
+          end_index: isReserved ? -1 : pos,
         };
       } else {
-        block.endTime = nextRow ? nextRow.time : "Selesai";
-        block.endPeriod = row.period;
+        // Extend block
+        block.end_time = next ? next.time_slot : "Selesai";
+        if (!checkIfReservedCode(block.teacher_code)) {
+          const posForThisRow = nonReservedPositions[i];
+          if (posForThisRow !== -1) block.end_index = posForThisRow;
+        }
       }
     }
-    if (block) combined.push(block);
 
-    console.log("Combined schedule:", combined);
-    return combined;
-  }, [scheduleData, selectedDay, selectedClass]);
+    if (block) blocks.push(block);
+    return blocks;
+  }, [schedules, teachers, dayFilter, classFilter]);
 }

@@ -9,19 +9,17 @@ import {
   Star,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { cn, formatTeacherName } from "@/lib/utils";
+import { checkIfReservedCode, cn, getDuration } from "@/lib/utils";
 import type { CSSProperties } from "react";
-import type { StudentScheduleRow, TeacherRow } from "@/types/schedule";
+import type { StudentScheduleBlock } from "@/types/schedule";
 import { days } from "@/lib/consts";
-import { getDuration, formatSubject } from "@/lib/utils";
 
-interface ScheduleItemProps {
-  row: StudentScheduleRow;
+type ScheduleItemProps = {
   index: number;
-  teacherData: TeacherRow[];
+  block: StudentScheduleBlock;
   day: string;
   currentDate: Date;
-}
+};
 
 // Combined subject styling configuration
 const SUBJECT_STYLES = {
@@ -142,22 +140,17 @@ const getTimeIcon = (time: string) => {
 };
 
 export function StudentScheduleItem({
-  row,
   index,
-  teacherData,
+  block,
   day,
   currentDate,
 }: ScheduleItemProps) {
-  const teacherInfo = teacherData.find((teacher) => teacher.code === row.code);
+  const subjectStyles = getSubjectStyles(block.teacher.subject.toLowerCase());
+  const isRegularClass = checkIfReservedCode(block.teacher_code) === false;
 
-  // const currentDate = new Date(2025, 6, 18, 6, 45)
-  const isRegularClass = !isNaN(Number.parseInt(row.period));
-  const subjectStyles = getSubjectStyles(teacherInfo?.subject);
+  const parsedStartTime = block.start_time.split(":").map(Number);
+  const parsedEndTime = block.end_time.split(":").map(Number);
 
-  const parsedStartTime = row.time.split(":").map(Number);
-  const parsedEndTime = row.endTime.split(":").map(Number);
-
-  // Improved isNow algorithm
   let currentDayIndex = currentDate.getDay() - 1;
   if (currentDate.getDay() === -1) currentDayIndex = 6;
   const scheduleDayIndex = days.indexOf(day);
@@ -168,8 +161,6 @@ export function StudentScheduleItem({
     currentDayIndex === scheduleDayIndex &&
     currentMinutes >= startMinutes &&
     currentMinutes < endMinutes;
-
-  // isNow = startMinutes % 2 === 0;
 
   return (
     <Card
@@ -188,13 +179,13 @@ export function StudentScheduleItem({
         {isRegularClass ? (
           <div className="flex flex-col items-center text-white">
             <span className="text-3xl font-bold tracking-tight">
-              {row.period}
+              {block.start_index}
             </span>
-            {row.endPeriod !== row.period && (
+            {block.start_index !== block.end_index && (
               <div className="mt-1 flex items-center gap-px text-sm">
                 {/* <div className="h-3 w-[1px] bg-white/60 rotate-12" /> */}
                 <ArrowRight className="size-3 flex-shrink-0" />
-                <span className="font-medium">{row.endPeriod}</span>
+                <span className="font-medium">{block.end_index}</span>
               </div>
             )}
           </div>
@@ -219,7 +210,7 @@ export function StudentScheduleItem({
           <div>
             <h3 className="font-semibold capitalize">
               <div className="flex items-center gap-2">
-                {isRegularClass && teacherInfo ? (
+                {isRegularClass ? (
                   <Book
                     className={cn("size-5 flex-shrink-0", subjectStyles.text)}
                   />
@@ -232,12 +223,10 @@ export function StudentScheduleItem({
                   className={cn(
                     "min-w-0 bg-clip-text text-pretty text-transparent",
                     subjectStyles.gradient,
-                    !(isRegularClass && teacherInfo) && "capitalize",
+                    !isRegularClass && "capitalize",
                   )}
                 >
-                  {isRegularClass && teacherInfo
-                    ? formatSubject(teacherInfo.subject)
-                    : row.code}
+                  {block.teacher.subject}
                 </span>
               </div>
             </h3>
@@ -245,13 +234,14 @@ export function StudentScheduleItem({
 
           <div className="flex flex-col gap-2 text-sm">
             <div className="text-foreground flex items-start gap-2">
-              {getTimeIcon(row.time)}
+              {getTimeIcon(block.start_time)}
               <span className={cn("text-foreground tabular-nums")}>
-                {row.time} - {row.endTime} {getDuration(row.time, row.endTime)}
+                {block.start_time} - {block.end_time}{" "}
+                {getDuration(block.start_time, block.end_time)}
               </span>
             </div>
 
-            {isRegularClass && teacherInfo && (
+            {isRegularClass && (
               <div className="text-foreground flex items-start gap-2">
                 <User
                   className={cn("text-foreground mt-0.5 size-4 flex-shrink-0")}
@@ -261,7 +251,7 @@ export function StudentScheduleItem({
                     "text-foreground min-w-0 text-pretty capitalize",
                   )}
                 >
-                  {formatTeacherName(teacherInfo.name)}
+                  {block.teacher.name}
                 </span>
               </div>
             )}
