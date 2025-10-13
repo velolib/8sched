@@ -48,15 +48,15 @@ function RouteComponent() {
   }
 
   return (
-    <Card className="bg-card text-card-foreground">
-      <CardHeader className="space-y-2">
+    <Card className="bg-card text-card-foreground p-4">
+      <CardHeader className="space-y-2 p-0">
         <CardTitle className="text-balance">Sign in</CardTitle>
         <CardDescription className="text-pretty">
           Enter your username and password to access your account.
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className='p-0'>
         <form onSubmit={onSubmit} className="grid gap-4">
           <div className="grid gap-1.5">
             <Label htmlFor="username">Username</Label>

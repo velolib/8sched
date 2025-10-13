@@ -33,7 +33,7 @@ export function MetricsCards({ data, isLoading, error }: MetricsCardsProps) {
         isLoading={isLoading}
         error={error}
       >
-        <CardFooter className="pt-0">
+        <CardFooter className="pt-0 p-0">
           <Button asChild variant="link" className="px-0">
             <Link to="/admin/schedules">View schedules</Link>
           </Button>
@@ -47,7 +47,7 @@ export function MetricsCards({ data, isLoading, error }: MetricsCardsProps) {
         isLoading={isLoading}
         error={error}
       >
-        <CardFooter className="pt-0">
+        <CardFooter className="pt-0 p-0">
           <Button asChild variant="link" className="px-0">
             <Link to="/admin/teachers">View teachers</Link>
           </Button>
@@ -89,12 +89,12 @@ function MetricCard({
   error: Error | null;
 }) {
   return (
-    <Card>
-      <CardHeader className="pb-3">
+    <Card className='p-4'>
+      <CardHeader className="pb-3 p-0">
         <CardTitle className="text-base">{title}</CardTitle>
         <CardDescription className="sr-only">{description}</CardDescription>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 p-0">
         <div className="flex h-10 items-center text-3xl font-semibold tracking-tight">
           {isLoading ? <Spinner className="size-6" /> : error ? "Error" : value}
         </div>

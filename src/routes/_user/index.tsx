@@ -38,14 +38,14 @@ function CardLink({
         className,
       )}
     >
-      <Card className="hover:bg-accent transition-colors">
-        <CardHeader>
+      <Card className="hover:bg-accent transition-colors p-4">
+        <CardHeader className='p-0'>
           <CardTitle className="text-balance">{title}</CardTitle>
           <CardDescription className="text-pretty">
             {description}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className='p-0'>
           <span className="text-muted-foreground group-hover:text-foreground inline-flex items-center text-sm transition-colors">
             {"Open"}
             <span aria-hidden className="ml-2">
