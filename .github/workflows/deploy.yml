@@ -40,3 +40,5 @@ jobs:
           packageManager: bun
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy ./dist --project-name=8sched --branch main
+      - name: Purge old deployments
+        run: ./.github/workflows/purge.sh
