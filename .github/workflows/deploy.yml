@@ -15,6 +15,7 @@ jobs:
     permissions:
       contents: read
       deployments: write
+      
     name: Deploy to Cloudflare Pages
     steps:
       - name: Checkout code
@@ -40,5 +41,18 @@ jobs:
           packageManager: bun
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: pages deploy ./dist --project-name=8sched --branch main
+    
+  purge:
+    runs-on: ubuntu-latest
+    needs: build-and-deploy
+    permissions:
+      contents: read
+      deployments: write
+    name: Purge old deployments
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Make script executable
+        run: chmod +x ./.github/workflows/purge.sh
       - name: Purge old deployments
         run: ./.github/workflows/purge.sh
