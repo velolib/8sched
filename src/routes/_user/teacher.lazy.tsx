@@ -139,7 +139,7 @@ function RouteComponent() {
           timetable.
         </p>
       </Card>
-      <Card className="mb-2 flex flex-col items-center gap-2 p-4 md:mb-4 md:flex-row">
+      <Card className="mb-4 flex flex-col items-center gap-2 p-4 md:flex-row">
         <div className="flex w-full gap-2 md:w-auto">
           <ComboBoxResponsive
             options={uniqueTeacherNames.map((name) => ({
@@ -194,7 +194,7 @@ function RouteComponent() {
         </div> */}
       </Card>
       <ScrollArea className="flex-1">
-        <div className="grid min-h-0 grid-cols-1 gap-2 md:grid-cols-2 md:gap-4 lg:grid-cols-3">
+        <div className="grid min-h-0 grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {combinedSchedule?.map((block, index) => (
             <TeacherScheduleItem
               key={`${index}-${selectedTeacherName}-${days[selectedDay]}`}
