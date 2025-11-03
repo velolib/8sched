@@ -21,8 +21,8 @@ function Index() {
           </CardHeader>
           <CardContent className="flex items-center justify-center text-center">
             <p className='w-2xl'>
-              A simple web app that compiles your school's class schedules into an easy-to-use website. Quickly check daily
-              timetables, see subject and teacher assignments, and keep track of schedule updates.
+              A simple web app that compiles <a href="https://www.sman8jkt.sch.id/" className='text-primary underline'>SMA Negeri 8 Jakarta</a>'s class schedules into an easy-to-use website. Quickly check daily
+              timetables, see subject and teacher assignments, and keep track of schedule updates — all in one place.
             </p>
           </CardContent>
         </Card>
