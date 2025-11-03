@@ -18,6 +18,7 @@ import { useStudentSchedule } from "@/hooks/useStudentSchedule";
 import { ComboBoxResponsive } from "@/components/ui/combo-box-responsive";
 import { useTeacherQuery } from "@/hooks/useTeacherQuery";
 import { Spinner } from "@/components/ui/spinner";
+import { sendGAEvent } from '@/lib/analytics';
 
 export const Route = createLazyFileRoute("/_user/student")({
   component: StudentComponent,
@@ -44,6 +45,7 @@ function StudentComponent() {
 
   const handleClassChange = (newClass: string) => {
     setSelectedClass(newClass);
+    sendGAEvent('select_class', { class: newClass });
   };
 
   const handleDayChange = (newDayIndex: number | string) => {

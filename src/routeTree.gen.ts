@@ -14,14 +14,14 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminRouteRouteImport } from './routes/admin/route'
 import { Route as UserRouteRouteImport } from './routes/_user/route'
 import { Route as UserIndexRouteImport } from './routes/_user/index'
+import { Route as UserTeacherRouteImport } from './routes/_user/teacher'
+import { Route as UserStudentRouteImport } from './routes/_user/student'
 import { Route as UserLoginRouteImport } from './routes/_user/login'
 
 const AdminIndexLazyRouteImport = createFileRoute('/admin/')()
 const AdminTeachersLazyRouteImport = createFileRoute('/admin/teachers')()
 const AdminSchedulesLazyRouteImport = createFileRoute('/admin/schedules')()
 const UserTestLazyRouteImport = createFileRoute('/_user/test')()
-const UserTeacherLazyRouteImport = createFileRoute('/_user/teacher')()
-const UserStudentLazyRouteImport = createFileRoute('/_user/student')()
 
 const AdminRouteRoute = AdminRouteRouteImport.update({
   id: '/admin',
@@ -61,12 +61,12 @@ const UserTestLazyRoute = UserTestLazyRouteImport.update({
   path: '/test',
   getParentRoute: () => UserRouteRoute,
 } as any).lazy(() => import('./routes/_user/test.lazy').then((d) => d.Route))
-const UserTeacherLazyRoute = UserTeacherLazyRouteImport.update({
+const UserTeacherRoute = UserTeacherRouteImport.update({
   id: '/teacher',
   path: '/teacher',
   getParentRoute: () => UserRouteRoute,
 } as any).lazy(() => import('./routes/_user/teacher.lazy').then((d) => d.Route))
-const UserStudentLazyRoute = UserStudentLazyRouteImport.update({
+const UserStudentRoute = UserStudentRouteImport.update({
   id: '/student',
   path: '/student',
   getParentRoute: () => UserRouteRoute,
@@ -80,8 +80,8 @@ const UserLoginRoute = UserLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteRouteWithChildren
   '/login': typeof UserLoginRoute
-  '/student': typeof UserStudentLazyRoute
-  '/teacher': typeof UserTeacherLazyRoute
+  '/student': typeof UserStudentRoute
+  '/teacher': typeof UserTeacherRoute
   '/test': typeof UserTestLazyRoute
   '/admin/schedules': typeof AdminSchedulesLazyRoute
   '/admin/teachers': typeof AdminTeachersLazyRoute
@@ -90,8 +90,8 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/login': typeof UserLoginRoute
-  '/student': typeof UserStudentLazyRoute
-  '/teacher': typeof UserTeacherLazyRoute
+  '/student': typeof UserStudentRoute
+  '/teacher': typeof UserTeacherRoute
   '/test': typeof UserTestLazyRoute
   '/admin/schedules': typeof AdminSchedulesLazyRoute
   '/admin/teachers': typeof AdminTeachersLazyRoute
@@ -103,8 +103,8 @@ export interface FileRoutesById {
   '/_user': typeof UserRouteRouteWithChildren
   '/admin': typeof AdminRouteRouteWithChildren
   '/_user/login': typeof UserLoginRoute
-  '/_user/student': typeof UserStudentLazyRoute
-  '/_user/teacher': typeof UserTeacherLazyRoute
+  '/_user/student': typeof UserStudentRoute
+  '/_user/teacher': typeof UserTeacherRoute
   '/_user/test': typeof UserTestLazyRoute
   '/admin/schedules': typeof AdminSchedulesLazyRoute
   '/admin/teachers': typeof AdminTeachersLazyRoute
@@ -207,14 +207,14 @@ declare module '@tanstack/react-router' {
       id: '/_user/teacher'
       path: '/teacher'
       fullPath: '/teacher'
-      preLoaderRoute: typeof UserTeacherLazyRouteImport
+      preLoaderRoute: typeof UserTeacherRouteImport
       parentRoute: typeof UserRouteRoute
     }
     '/_user/student': {
       id: '/_user/student'
       path: '/student'
       fullPath: '/student'
-      preLoaderRoute: typeof UserStudentLazyRouteImport
+      preLoaderRoute: typeof UserStudentRouteImport
       parentRoute: typeof UserRouteRoute
     }
     '/_user/login': {
@@ -229,16 +229,16 @@ declare module '@tanstack/react-router' {
 
 interface UserRouteRouteChildren {
   UserLoginRoute: typeof UserLoginRoute
-  UserStudentLazyRoute: typeof UserStudentLazyRoute
-  UserTeacherLazyRoute: typeof UserTeacherLazyRoute
+  UserStudentRoute: typeof UserStudentRoute
+  UserTeacherRoute: typeof UserTeacherRoute
   UserTestLazyRoute: typeof UserTestLazyRoute
   UserIndexRoute: typeof UserIndexRoute
 }
 
 const UserRouteRouteChildren: UserRouteRouteChildren = {
   UserLoginRoute: UserLoginRoute,
-  UserStudentLazyRoute: UserStudentLazyRoute,
-  UserTeacherLazyRoute: UserTeacherLazyRoute,
+  UserStudentRoute: UserStudentRoute,
+  UserTeacherRoute: UserTeacherRoute,
   UserTestLazyRoute: UserTestLazyRoute,
   UserIndexRoute: UserIndexRoute,
 }

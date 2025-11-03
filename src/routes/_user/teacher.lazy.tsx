@@ -19,6 +19,7 @@ import { useTeacherQuery } from "@/hooks/useTeacherQuery";
 import { useSessionStorage } from "@uidotdev/usehooks";
 import { TeacherScheduleItem } from "@/components/teacher-schedule-item";
 import { Spinner } from "@/components/ui/spinner";
+import { sendGAEvent } from '@/lib/analytics';
 
 export const Route = createLazyFileRoute("/_user/teacher")({
   component: RouteComponent,
@@ -57,6 +58,7 @@ function RouteComponent() {
 
   function handleTeacherChange(value: string) {
     setSelectedTeacherName(value);
+    sendGAEvent('select_teacher', { teacher: value });
   }
 
   function handleDayChange(value: number | string) {

@@ -77,6 +77,13 @@ export const Route = createFileRoute("/admin")({
   },
   component: AdminComponent,
   errorComponent: AdminErrorComponent,
+  head: () => ({
+    meta: [
+      {
+        title: "Admin - 8Sched by malik",
+      }
+    ]
+  }),
 });
 
 type AdminLayoutProps = {

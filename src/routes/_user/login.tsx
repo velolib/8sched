@@ -12,4 +12,11 @@ export const Route = createFileRoute("/_user/login")({
       }
     });
   },
+  head: () => ({
+    meta: [
+      {
+        title: "Login - 8Sched by malik",
+      },
+    ],
+  }),
 });
