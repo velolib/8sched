@@ -1,27 +1,17 @@
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Toaster } from "@/components/ui/sonner";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { useLocalStorage } from "@uidotdev/usehooks";
 
 export const Route = createRootRoute({
   component: RootComponent,
 });
 
 function RootComponent() {
-  const [firstTime, setFirstTime] = useLocalStorage("firstTime", true);
+  // const [firstTime, setFirstTime] = useLocalStorage("firstTime", true);
 
   return (
     <>
-      <Dialog open={firstTime} onOpenChange={() => setFirstTime(false)}>
+      {/* <Dialog open={firstTime} onOpenChange={() => setFirstTime(false)}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Welcome to 8Sched 1.0.0!</DialogTitle>
@@ -35,7 +25,7 @@ function RootComponent() {
             <Button onClick={() => setFirstTime(false)}>Got it!</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       <Outlet />
       <Toaster position="top-center" />
       <TanStackRouterDevtools />
