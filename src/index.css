@@ -177,7 +177,7 @@
     background: transparent;
   }
   *::-webkit-scrollbar-thumb {
-    background: var(--border);
+    background: var(--muted-foreground);
     border-radius: 5px;
   }
 }
